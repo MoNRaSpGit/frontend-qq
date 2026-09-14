@@ -14,12 +14,16 @@ export const QQ_CATEGORY_OPTIONS: QqCategoryOption[] = [
   { value: "musica", label: "Música", genre: "musica" },
   { value: "cine", label: "Cine", genre: "cine" },
   { value: "videojuegos", label: "Video juegos", genre: "videojuegos" },
-  { value: "pagina-web", label: "Página web", genre: "pagina-web" }
+  { value: "pagina-web", label: "Página web", genre: "pagina-web" },
+  { value: "anime", label: "Anime", genre: "anime" },
+  { value: "herramientas", label: "Herramientas", genre: "herramientas" }
 ];
 
 export const QQ_GENRE_LABELS: Record<QqGenreKey, string> = {
   musica: "Música",
   cine: "Cine",
   videojuegos: "Video juegos",
-  "pagina-web": "Página web"
+  "pagina-web": "Página web",
+  anime: "Anime",
+  herramientas: "Herramientas"
 };
