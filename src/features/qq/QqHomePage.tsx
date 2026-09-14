@@ -69,7 +69,12 @@ export function QqHomePage() {
 
   return (
     <div className="qq-shell">
-      <Header session={session} onInicio={handleInicio} onIngresar={() => setShowAuthModal(true)} onSalir={() => void handleSalir()} />
+      {/* Hero clasico: la foto ocupa la mitad de arriba (con el header
+          encima) y se va apagando hasta fundirse con el fondo oscuro de
+          abajo, donde viven el buscador y las tarjetas. */}
+      <div className="qq-hero">
+        <Header session={session} onInicio={handleInicio} onIngresar={() => setShowAuthModal(true)} onSalir={() => void handleSalir()} />
+      </div>
 
       <div className="qq-search-wrap">
         <form className="qq-search-row" onSubmit={(event) => event.preventDefault()}>

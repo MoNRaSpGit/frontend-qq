@@ -20,16 +20,13 @@
 
 body {
   margin: 0;
-  /* Foto de fondo real (provista por el cliente) + un velo oscuro con
-     manchas de color por encima -- para que el buscador y las tarjetas
-     se sigan leyendo bien arriba de la foto, sin taparla del todo. */
+  /* Manchas de color grandes y suaves sobre el fondo oscuro -- da algo
+     de vida al resto de la pagina (abajo del hero), sin competir con la
+     foto de arriba. */
   background:
-    radial-gradient(1100px 750px at 12% -8%, rgba(122, 13, 22, 0.32), transparent 60%),
-    radial-gradient(1000px 700px at 92% 6%, rgba(13, 63, 158, 0.28), transparent 60%),
-    linear-gradient(180deg, rgba(10, 10, 11, 0.55) 0%, rgba(10, 10, 11, 0.82) 55%, rgba(10, 10, 11, 0.95) 100%),
-    url("../assets/qq-background.avif") center center / cover no-repeat,
+    radial-gradient(1100px 750px at 12% -8%, rgba(122, 13, 22, 0.22), transparent 60%),
+    radial-gradient(1000px 700px at 92% 6%, rgba(13, 63, 158, 0.18), transparent 60%),
     var(--color-bg);
-  background-attachment: fixed;
   color: var(--color-text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -45,7 +42,31 @@ button {
   flex-direction: column;
 }
 
+/* Hero clasico: foto real del cliente ocupando la mitad de arriba de la
+   pagina, con el header encima -- se va apagando con un degrade hasta
+   fundirse en el fondo oscuro solido de abajo (donde estan el buscador
+   y las tarjetas). El degrade es un pseudo-elemento aparte (no el
+   background de .qq-hero) para poder ponerlo ENCIMA de la foto pero
+   DEBAJO del contenido del header, que necesita leerse bien. */
+.qq-hero {
+  position: relative;
+  min-height: 46vh;
+  background: url("../assets/qq-background.png") center 22% / cover no-repeat;
+  display: flex;
+  flex-direction: column;
+}
+
+.qq-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 6, 7, 0.35) 0%, rgba(6, 6, 7, 0.55) 55%, var(--color-bg) 100%);
+  pointer-events: none;
+}
+
 .qq-header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
