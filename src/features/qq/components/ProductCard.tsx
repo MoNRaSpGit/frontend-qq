@@ -1,3 +1,4 @@
+import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
 type ProductCardProps = {
@@ -6,13 +7,18 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product, onClick }: ProductCardProps) {
+  const theme = getProductTheme(product);
+
   return (
     <button type="button" className="qq-card" onClick={() => onClick?.(product)}>
-      <div className="qq-card-media">
+      <div className="qq-card-media" style={product.imageUrl ? undefined : { background: theme.gradient }}>
         {product.imageUrl ? (
           <img src={product.imageUrl} alt={product.name} loading="lazy" />
         ) : (
-          <span className="qq-card-media-placeholder">{product.name.slice(0, 1).toUpperCase()}</span>
+          <div className="qq-card-media-mock" style={{ color: theme.textColor }}>
+            <span className="qq-card-media-wordmark">{product.name}</span>
+            {product.description ? <span className="qq-card-media-tagline">{product.description}</span> : null}
+          </div>
         )}
       </div>
       <div className="qq-card-body">
