@@ -542,6 +542,14 @@ button {
   border-radius: var(--radius);
   background: linear-gradient(160deg, #2a2a2e, #17171a);
   overflow: hidden;
+  /* Borde dorado para que las tarjetas se diferencien del fondo --
+     pedido explicito (15/09/2026). */
+  border: 2px solid var(--color-accent);
+}
+
+.qq-card:hover .qq-card-media {
+  border-color: var(--color-accent-dark);
+  box-shadow: 0 0 0 3px rgba(230, 179, 37, 0.25);
 }
 
 .qq-card-media img {
