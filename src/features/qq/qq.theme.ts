@@ -23,7 +23,11 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
   "paramount+": { gradient: "linear-gradient(160deg, #123fae, #050f38)", textColor: "#ffffff" },
   "apple tv+": { gradient: "linear-gradient(160deg, #2b2b2e, #050505)", textColor: "#ffffff" },
   "star+": { gradient: "linear-gradient(160deg, #0a2a4a, #041018)", textColor: "#ffffff" },
-  crunchyroll: { gradient: "linear-gradient(160deg, #d4590f, #401a04)", textColor: "#ffffff" }
+  crunchyroll: { gradient: "linear-gradient(160deg, #d4590f, #401a04)", textColor: "#ffffff" },
+  "xbox game pass": { gradient: "linear-gradient(160deg, #0e7a3c, #052414)", textColor: "#ffffff" },
+  "playstation plus": { gradient: "linear-gradient(160deg, #0c3faa, #051538)", textColor: "#ffffff" },
+  steam: { gradient: "linear-gradient(160deg, #1b2838, #05080d)", textColor: "#ffffff" },
+  "nintendo online": { gradient: "linear-gradient(160deg, #c4171f, #360508)", textColor: "#ffffff" }
 };
 
 // Paleta de respaldo para categorias sin tema propio -- se elige siempre

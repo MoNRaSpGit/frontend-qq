@@ -58,11 +58,45 @@ button {
 }
 
 /* Buscador centrado, protagonista de la pantalla -- mismo espiritu que
-   el buscador de Netflix (arriba, grande, sin nada mas alrededor). */
+   el buscador de Netflix (arriba, grande). Los chips de categoria van
+   pegados debajo, centrados junto al buscador. */
 .qq-search-wrap {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   padding: 28px 20px 36px;
+}
+
+.qq-genre-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qq-chip {
+  min-height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: rgba(26, 26, 29, 0.6);
+  color: var(--color-text-muted);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.qq-chip:hover {
+  border-color: var(--color-accent-dark);
+  color: var(--color-text);
+}
+
+.qq-chip.is-active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #141414;
 }
 
 .qq-search-input {

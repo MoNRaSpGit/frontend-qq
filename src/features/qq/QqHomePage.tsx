@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { listProducts } from "./qq.client";
 import { ProductCard } from "./components/ProductCard";
 import { ProductFormModal } from "./components/ProductFormModal";
+import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
 import type { QqProduct } from "./qq.types";
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
@@ -11,10 +12,18 @@ import type { QqProduct } from "./qq.types";
 // (editar producto, categorias, etc.) se suman despues.
 export function QqHomePage() {
   const [query, setQuery] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  // El genero (Cine/Musica/Juegos) filtra sobre lo que ya trajo el
+  // buscador -- no pega al backend de nuevo, se resuelve en el momento a
+  // partir de la categoria de cada producto (ver qq.genres.ts).
+  const visibleProducts = selectedGenre
+    ? products.filter((product) => getGenreForCategory(product.category) === selectedGenre)
+    : products;
 
   async function refresh(search?: string) {
     setIsLoading(true);
@@ -54,6 +63,26 @@ export function QqHomePage() {
           onChange={(event) => setQuery(event.target.value)}
           autoFocus
         />
+
+        <div className="qq-genre-chips" role="group" aria-label="Filtrar por categoría">
+          <button
+            type="button"
+            className={selectedGenre === null ? "qq-chip is-active" : "qq-chip"}
+            onClick={() => setSelectedGenre(null)}
+          >
+            Todos
+          </button>
+          {QQ_GENRES.map((genre) => (
+            <button
+              type="button"
+              key={genre.key}
+              className={selectedGenre === genre.key ? "qq-chip is-active" : "qq-chip"}
+              onClick={() => setSelectedGenre((current) => (current === genre.key ? null : genre.key))}
+            >
+              {genre.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <main className="qq-main">
@@ -61,14 +90,18 @@ export function QqHomePage() {
 
         {!error && isLoading ? <p className="qq-hint">Cargando...</p> : null}
 
-        {!error && !isLoading && products.length === 0 ? (
+        {!error && !isLoading && visibleProducts.length === 0 ? (
           <p className="qq-hint">
-            {query.trim() ? `No se encontraron productos para "${query.trim()}".` : "Todavía no hay productos cargados."}
+            {query.trim()
+              ? `No se encontraron productos para "${query.trim()}".`
+              : selectedGenre
+                ? "No hay productos cargados en esta categoría todavía."
+                : "Todavía no hay productos cargados."}
           </p>
         ) : null}
 
         <div className="qq-grid">
-          {products.map((product) => (
+          {visibleProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
