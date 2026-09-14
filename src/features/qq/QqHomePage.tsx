@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { listProducts } from "./qq.client";
+import { listProducts, logoutUser } from "./qq.client";
+import { AuthModal } from "./components/AuthModal";
+import { Header } from "./components/Header";
 import { ProductCard } from "./components/ProductCard";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
+import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqProduct } from "./qq.types";
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
-// (buscador arriba, grilla de tarjetas abajo). El resto de las pantallas
-// (editar producto, categorias, etc.) se suman despues.
+// (buscador arriba, grilla de tarjetas abajo). Se le suma el header
+// (marca, nav, ingresar) y el login/registro (15/09/2026) -- el resto de
+// las pantallas (editar producto, Blog, Contacto reales) se suman despues.
 export function QqHomePage() {
+  const [session, setSession] = useState<QqSession | null>(() => loadSession());
   const [query, setQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const isAdmin = session?.user.role === "administrador";
 
   // El genero (Cine/Musica/Juegos) filtra sobre lo que ya trajo el
   // buscador -- no pega al backend de nuevo, se resuelve en el momento a
@@ -45,24 +53,41 @@ export function QqHomePage() {
     return () => window.clearTimeout(timeoutId);
   }, [query]);
 
+  function handleInicio() {
+    setQuery("");
+    setSelectedGenre(null);
+  }
+
+  async function handleSalir() {
+    if (session) {
+      await logoutUser(session.token);
+    }
+    clearSession();
+    setSession(null);
+    toast.success("Saliste de tu cuenta.");
+  }
+
   return (
     <div className="qq-shell">
-      <header className="qq-header">
-        <span className="qq-brand">QQ</span>
-        <button type="button" className="qq-button qq-button--primary" onClick={() => setShowAddModal(true)}>
-          + Agregar producto
-        </button>
-      </header>
+      <Header session={session} onInicio={handleInicio} onIngresar={() => setShowAuthModal(true)} onSalir={() => void handleSalir()} />
 
       <div className="qq-search-wrap">
-        <input
-          type="text"
-          className="qq-search-input"
-          placeholder="Buscar producto..."
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          autoFocus
-        />
+        <form className="qq-search-row" onSubmit={(event) => event.preventDefault()}>
+          <input
+            type="text"
+            className="qq-search-input"
+            placeholder="Buscar producto..."
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            autoFocus
+          />
+          <button type="submit" className="qq-search-button" aria-label="Buscar">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </form>
 
         <div className="qq-genre-chips" role="group" aria-label="Filtrar por categoría">
           <button
@@ -83,6 +108,12 @@ export function QqHomePage() {
             </button>
           ))}
         </div>
+
+        {isAdmin ? (
+          <button type="button" className="qq-button qq-button--primary qq-add-button" onClick={() => setShowAddModal(true)}>
+            + Agregar producto
+          </button>
+        ) : null}
       </div>
 
       <main className="qq-main">
@@ -107,13 +138,26 @@ export function QqHomePage() {
         </div>
       </main>
 
-      {showAddModal ? (
+      {showAddModal && session ? (
         <ProductFormModal
+          token={session.token}
           onCancelar={() => setShowAddModal(false)}
           onGuardado={(product) => {
             setShowAddModal(false);
             setProducts((current) => [product, ...current]);
             toast.success(`"${product.name}" se agregó correctamente.`);
+          }}
+        />
+      ) : null}
+
+      {showAuthModal ? (
+        <AuthModal
+          onCancelar={() => setShowAuthModal(false)}
+          onIngresado={(nextSession) => {
+            saveSession(nextSession);
+            setSession(nextSession);
+            setShowAuthModal(false);
+            toast.success(`Hola, ${nextSession.user.fullName || nextSession.user.email}.`);
           }}
         />
       ) : null}

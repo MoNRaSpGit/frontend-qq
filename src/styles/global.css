@@ -8,6 +8,8 @@
   --color-text-muted: #9a9a9e;
   --color-accent: #e6b325;
   --color-accent-dark: #a97e0f;
+  --color-celeste: #2fb2e8;
+  --color-celeste-dark: #1c86b3;
   --color-danger: #e0554a;
   --radius: 12px;
 }
@@ -18,14 +20,14 @@
 
 body {
   margin: 0;
-  /* Fondo con onda: manchas de color grandes y suaves sobre el fondo
-     oscuro (rojo Netflix arriba a la izquierda, azul Disney+ arriba a la
-     derecha, violeta HBO abajo) -- da la sensacion de "plataforma de
-     streaming premium" sin necesitar ninguna imagen. */
+  /* Foto de fondo real (provista por el cliente) + un velo oscuro con
+     manchas de color por encima -- para que el buscador y las tarjetas
+     se sigan leyendo bien arriba de la foto, sin taparla del todo. */
   background:
-    radial-gradient(1100px 750px at 12% -8%, rgba(122, 13, 22, 0.38), transparent 60%),
-    radial-gradient(1000px 700px at 92% 6%, rgba(13, 63, 158, 0.32), transparent 60%),
-    radial-gradient(950px 850px at 50% 115%, rgba(91, 33, 182, 0.28), transparent 60%),
+    radial-gradient(1100px 750px at 12% -8%, rgba(122, 13, 22, 0.32), transparent 60%),
+    radial-gradient(1000px 700px at 92% 6%, rgba(13, 63, 158, 0.28), transparent 60%),
+    linear-gradient(180deg, rgba(10, 10, 11, 0.55) 0%, rgba(10, 10, 11, 0.82) 55%, rgba(10, 10, 11, 0.95) 100%),
+    url("../assets/qq-background.avif") center center / cover no-repeat,
     var(--color-bg);
   background-attachment: fixed;
   color: var(--color-text);
@@ -55,6 +57,46 @@ button {
   font-weight: 800;
   letter-spacing: 0.04em;
   color: var(--color-accent);
+}
+
+.qq-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.qq-nav-link {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 14.5px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.qq-nav-link:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.qq-session {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qq-session-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .qq-nav {
+    display: none;
+  }
 }
 
 /* Buscador centrado, protagonista de la pantalla -- mismo espiritu que
@@ -99,9 +141,17 @@ button {
   color: #141414;
 }
 
-.qq-search-input {
+.qq-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  max-width: 560px;
+  max-width: 720px;
+}
+
+.qq-search-input {
+  flex: 1;
+  min-width: 0;
   min-height: 54px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
@@ -122,6 +172,34 @@ button {
 .qq-search-input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(230, 179, 37, 0.18);
+}
+
+.qq-search-button {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-celeste);
+  color: #06222f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(47, 178, 232, 0.35);
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.qq-search-button:hover {
+  background: var(--color-celeste-dark);
+}
+
+.qq-search-button:active {
+  transform: scale(0.94);
+}
+
+.qq-add-button {
+  margin-top: 4px;
 }
 
 .qq-main {
@@ -302,6 +380,12 @@ button {
 .qq-modal-box h2 {
   margin: 0 0 18px;
   font-size: 20px;
+}
+
+.qq-auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .qq-field {

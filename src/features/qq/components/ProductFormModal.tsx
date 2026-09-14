@@ -3,14 +3,16 @@ import { createProduct } from "../qq.client";
 import type { QqProduct } from "../qq.types";
 
 type ProductFormModalProps = {
+  token: string;
   onCancelar: () => void;
   onGuardado: (product: QqProduct) => void;
 };
 
 // Alta simple, sin edicion todavia -- version arranque pedida por el
 // usuario (14/09/2026): buscador + tarjetas primero, el resto de los
-// detalles (editar, borrar, imagenes reales) se ven despues.
-export function ProductFormModal({ onCancelar, onGuardado }: ProductFormModalProps) {
+// detalles (editar, borrar, imagenes reales) se ven despues. Solo un
+// administrador logueado llega a ver este modal (ver QqHomePage).
+export function ProductFormModal({ token, onCancelar, onGuardado }: ProductFormModalProps) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("UYU");
@@ -36,7 +38,7 @@ export function ProductFormModal({ onCancelar, onGuardado }: ProductFormModalPro
     setError("");
     setGuardando(true);
     try {
-      const product = await createProduct({
+      const product = await createProduct(token, {
         name: name.trim(),
         price: precioNum,
         currency: currency.trim() || "UYU",
