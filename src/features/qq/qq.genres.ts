@@ -1,37 +1,21 @@
-// Agrupa cada categoria especifica (netflix, spotify, etc.) en un genero
-// mas general -- lo que se muestra como chip al lado del buscador. Nuevo
-// producto con categoria no mapeada = no aparece en ningun genero puntual
-// (solo en "Todos"), no rompe nada.
-export type QqGenreKey = "cine" | "musica" | "juegos";
+// Categorias cerradas -- pedido explicito (15/09/2026): "son solo esas
+// categorias" (Musica, Cine, Video juegos, Pagina web). Antes el genero
+// agrupaba varias categorias especificas (netflix, spotify, etc.); ahora
+// la categoria QUE ELIGE EL ADMIN (ver qq.categories.ts) ya es
+// directamente el genero -- no hace falta ningun mapeo intermedio.
+export type QqGenreKey = "musica" | "cine" | "videojuegos" | "pagina-web";
 
 export const QQ_GENRES: Array<{ key: QqGenreKey; label: string }> = [
-  { key: "cine", label: "Cine" },
   { key: "musica", label: "Música" },
-  { key: "juegos", label: "Juegos" }
+  { key: "cine", label: "Cine" },
+  { key: "videojuegos", label: "Video juegos" },
+  { key: "pagina-web", label: "Página web" }
 ];
 
-const GENRE_BY_CATEGORY: Record<string, QqGenreKey> = {
-  netflix: "cine",
-  "disney+": "cine",
-  "disney plus": "cine",
-  "hbo max": "cine",
-  max: "cine",
-  "prime video": "cine",
-  "amazon prime video": "cine",
-  "paramount+": "cine",
-  "apple tv+": "cine",
-  "star+": "cine",
-  crunchyroll: "cine",
-  "youtube premium": "cine",
-  spotify: "musica",
-  "youtube music": "musica",
-  "xbox game pass": "juegos",
-  "playstation plus": "juegos",
-  steam: "juegos",
-  "nintendo online": "juegos"
-};
+const VALID_GENRES = new Set<string>(QQ_GENRES.map((genre) => genre.key));
 
 export function getGenreForCategory(category: string | null): QqGenreKey | null {
   if (!category) return null;
-  return GENRE_BY_CATEGORY[category.trim().toLowerCase()] ?? null;
+  const normalized = category.trim().toLowerCase();
+  return VALID_GENRES.has(normalized) ? (normalized as QqGenreKey) : null;
 }

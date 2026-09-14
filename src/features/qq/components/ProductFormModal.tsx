@@ -1,8 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { createProduct, getProductImageSrc, updateProduct, uploadProductImage } from "../qq.client";
-import { QQ_CATEGORY_OPTIONS, QQ_GENRE_LABELS } from "../qq.categories";
+import { QQ_CATEGORY_OPTIONS } from "../qq.categories";
 import { resizeImageFile } from "../qq.imageResize";
-import type { QqGenreKey } from "../qq.genres";
 import type { QqProduct } from "../qq.types";
 
 type ProductFormModalProps = {
@@ -13,8 +12,6 @@ type ProductFormModalProps = {
   onCancelar: () => void;
   onGuardado: (product: QqProduct) => void;
 };
-
-const GENRE_ORDER: QqGenreKey[] = ["cine", "musica", "juegos"];
 
 // Precio SIEMPRE en pesos (UYU) y SIEMPRE mensual -- pedido explicito
 // (15/09/2026): "el precio va a ser en pesos... eso es mensual". No hay
@@ -123,14 +120,10 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
             <span>Categoría</span>
             <select value={category} onChange={(event) => setCategory(event.target.value)}>
               <option value="">Elegir...</option>
-              {GENRE_ORDER.map((genre) => (
-                <optgroup key={genre} label={QQ_GENRE_LABELS[genre]}>
-                  {QQ_CATEGORY_OPTIONS.filter((option) => option.genre === genre).map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </optgroup>
+              {QQ_CATEGORY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
               ))}
             </select>
           </label>

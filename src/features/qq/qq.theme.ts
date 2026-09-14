@@ -9,25 +9,13 @@ type CategoryTheme = {
   textColor: string;
 };
 
+// 4 categorias cerradas (15/09/2026: "son solo esas categorias") -- un
+// color propio por categoria, ya no por marca/servicio especifico.
 const CATEGORY_THEMES: Record<string, CategoryTheme> = {
-  netflix: { gradient: "linear-gradient(160deg, #7a0d16, #2b0509)", textColor: "#ffffff" },
-  "disney+": { gradient: "linear-gradient(160deg, #0d3f9e, #06153f)", textColor: "#ffffff" },
-  "disney plus": { gradient: "linear-gradient(160deg, #0d3f9e, #06153f)", textColor: "#ffffff" },
-  "hbo max": { gradient: "linear-gradient(160deg, #5b21b6, #1c0a35)", textColor: "#ffffff" },
-  max: { gradient: "linear-gradient(160deg, #5b21b6, #1c0a35)", textColor: "#ffffff" },
-  "youtube premium": { gradient: "linear-gradient(160deg, #a11f1f, #1a0505)", textColor: "#ffffff" },
-  "youtube music": { gradient: "linear-gradient(160deg, #a11f1f, #1a0505)", textColor: "#ffffff" },
-  spotify: { gradient: "linear-gradient(160deg, #14834a, #06210f)", textColor: "#ffffff" },
-  "amazon prime video": { gradient: "linear-gradient(160deg, #0a5f77, #052733)", textColor: "#ffffff" },
-  "prime video": { gradient: "linear-gradient(160deg, #0a5f77, #052733)", textColor: "#ffffff" },
-  "paramount+": { gradient: "linear-gradient(160deg, #123fae, #050f38)", textColor: "#ffffff" },
-  "apple tv+": { gradient: "linear-gradient(160deg, #2b2b2e, #050505)", textColor: "#ffffff" },
-  "star+": { gradient: "linear-gradient(160deg, #0a2a4a, #041018)", textColor: "#ffffff" },
-  crunchyroll: { gradient: "linear-gradient(160deg, #d4590f, #401a04)", textColor: "#ffffff" },
-  "xbox game pass": { gradient: "linear-gradient(160deg, #0e7a3c, #052414)", textColor: "#ffffff" },
-  "playstation plus": { gradient: "linear-gradient(160deg, #0c3faa, #051538)", textColor: "#ffffff" },
-  steam: { gradient: "linear-gradient(160deg, #1b2838, #05080d)", textColor: "#ffffff" },
-  "nintendo online": { gradient: "linear-gradient(160deg, #c4171f, #360508)", textColor: "#ffffff" }
+  musica: { gradient: "linear-gradient(160deg, #14834a, #06210f)", textColor: "#ffffff" },
+  cine: { gradient: "linear-gradient(160deg, #7a0d16, #2b0509)", textColor: "#ffffff" },
+  videojuegos: { gradient: "linear-gradient(160deg, #5b21b6, #1c0a35)", textColor: "#ffffff" },
+  "pagina-web": { gradient: "linear-gradient(160deg, #0a5f77, #052733)", textColor: "#ffffff" }
 };
 
 // Paleta de respaldo para categorias sin tema propio -- se elige siempre
