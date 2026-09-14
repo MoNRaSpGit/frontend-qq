@@ -112,7 +112,7 @@ export function QqHomePage() {
           -- asi confirmamos (15/09/2026) que carga bien y sin lios de
           cache. Si el cliente manda otra foto nueva, se reemplaza este
           nombre de archivo aca. */}
-      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCuatro.jpg)` }}>
+      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)` }}>
         <Header
           session={session}
           cartCount={getCartCount(cartItems)}

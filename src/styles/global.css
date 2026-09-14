@@ -62,7 +62,19 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(6, 6, 7, 0.12) 0%, rgba(6, 6, 7, 0.3) 60%, var(--color-bg) 100%);
+  /* Oscuro solo arriba (detras del header, para que se lea bien) y
+     transparente en el resto -- la foto se ve en su color natural --
+     hasta fundirse con el fondo oscuro solido justo en el borde de
+     abajo. Pedido explicito (15/09/2026): "dejame verla primero color
+     natural". */
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 7, 0.45) 0%,
+    rgba(6, 6, 7, 0.12) 16%,
+    rgba(6, 6, 7, 0) 28%,
+    rgba(6, 6, 7, 0) 82%,
+    var(--color-bg) 100%
+  );
   pointer-events: none;
 }
 
