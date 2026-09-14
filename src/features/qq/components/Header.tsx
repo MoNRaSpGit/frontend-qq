@@ -8,7 +8,9 @@ type HeaderProps = {
   cartCount: number;
   selectedGenre: QqGenreKey | null;
   onSelectGenre: (genre: QqGenreKey | null) => void;
+  activeView: "catalogo" | "productos";
   onInicio: () => void;
+  onProductos: () => void;
   onIngresar: () => void;
   onSalir: () => void;
   onAbrirCarrito: () => void;
@@ -21,8 +23,20 @@ type HeaderProps = {
 // "Categorias" (15/09/2026): antes los chips de genero (Cine/Musica/
 // Juegos) vivian al lado del buscador -- pedido explicito de sacarlos de
 // ahi y ponerlos en un desplegable propio del header.
-export function Header({ session, cartCount, selectedGenre, onSelectGenre, onInicio, onIngresar, onSalir, onAbrirCarrito }: HeaderProps) {
+export function Header({
+  session,
+  cartCount,
+  selectedGenre,
+  onSelectGenre,
+  activeView,
+  onInicio,
+  onProductos,
+  onIngresar,
+  onSalir,
+  onAbrirCarrito
+}: HeaderProps) {
   const [showFeatures, setShowFeatures] = useState(false);
+  const isAdmin = session?.user.role === "administrador";
 
   function handleSelectGenre(genre: QqGenreKey | null) {
     onSelectGenre(genre);
@@ -34,9 +48,23 @@ export function Header({ session, cartCount, selectedGenre, onSelectGenre, onIni
       <img className="qq-brand-logo" src={`${import.meta.env.BASE_URL}QqNeutro.png`} alt="Qq Digital" />
 
       <nav className="qq-nav">
-        <button type="button" className="qq-nav-link" onClick={onInicio}>
+        <button
+          type="button"
+          className={activeView === "catalogo" ? "qq-nav-link is-active" : "qq-nav-link"}
+          onClick={onInicio}
+        >
           Inicio
         </button>
+
+        {isAdmin ? (
+          <button
+            type="button"
+            className={activeView === "productos" ? "qq-nav-link is-active" : "qq-nav-link"}
+            onClick={onProductos}
+          >
+            Productos
+          </button>
+        ) : null}
 
         <div className="qq-features-dropdown">
           <button

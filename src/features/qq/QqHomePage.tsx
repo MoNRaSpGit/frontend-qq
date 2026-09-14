@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { deleteProduct, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
+import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
 import { CartDrawer } from "./components/CartDrawer";
 import { Header } from "./components/Header";
@@ -22,6 +23,11 @@ import type { QqProduct } from "./qq.types";
 // Contacto reales) se suman despues.
 export function QqHomePage() {
   const [session, setSession] = useState<QqSession | null>(() => loadSession());
+  // "catalogo" = lo que ve cualquier visitante; "productos" = pantalla
+  // propia del admin para cargar/editar/borrar -- pedido explicito
+  // (15/09/2026): "que no ingrese directo en la pantalla principal, que
+  // tenga su propia pestaña".
+  const [view, setView] = useState<"catalogo" | "productos">("catalogo");
   const [query, setQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
@@ -84,6 +90,7 @@ export function QqHomePage() {
   }, [query]);
 
   function handleInicio() {
+    setView("catalogo");
     setQuery("");
     setSelectedGenre(null);
   }
@@ -94,6 +101,7 @@ export function QqHomePage() {
     }
     clearSession();
     setSession(null);
+    setView("catalogo");
     toast.success("Saliste de tu cuenta.");
   }
 
@@ -146,7 +154,9 @@ export function QqHomePage() {
           cartCount={getCartCount(cartItems)}
           selectedGenre={selectedGenre}
           onSelectGenre={setSelectedGenre}
+          activeView={view}
           onInicio={handleInicio}
+          onProductos={() => setView("productos")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
@@ -154,69 +164,72 @@ export function QqHomePage() {
 
       </div>
 
-      <div className="qq-search-wrap">
-        <div className="qq-hero-heading">
-          <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
-          <p className="qq-hero-subtitle">Busca y consulta contenidos en tu plataforma de streaming favorita.</p>
-        </div>
+      {view === "productos" && isAdmin ? (
+        <AdminProductsPage
+          products={products}
+          isLoading={isLoading}
+          error={error}
+          onNuevo={() => setProductFormTarget("new")}
+          onEditar={handleEditar}
+          onEliminar={(product) => void handleEliminar(product)}
+        />
+      ) : (
+        <>
+          <div className="qq-search-wrap">
+            <div className="qq-hero-heading">
+              <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
+              <p className="qq-hero-subtitle">Busca y consulta contenidos en tu plataforma de streaming favorita.</p>
+            </div>
 
-        <form className="qq-search-row" ref={searchRowRef} onSubmit={(event) => event.preventDefault()}>
-          <span className="qq-search-icon qq-search-icon--left" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
-            </svg>
-          </span>
+            <form className="qq-search-row" ref={searchRowRef} onSubmit={(event) => event.preventDefault()}>
+              <span className="qq-search-icon qq-search-icon--left" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
+                </svg>
+              </span>
 
-          <input
-            type="text"
-            className="qq-search-input"
-            placeholder="Buscar películas, series, juegos"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            autoFocus
-          />
+              <input
+                type="text"
+                className="qq-search-input"
+                placeholder="Buscar películas, series, juegos"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                autoFocus
+              />
 
-          <button type="submit" className="qq-search-button" aria-label="Buscar">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
-            </svg>
-          </button>
-        </form>
+              <button type="submit" className="qq-search-button" aria-label="Buscar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </form>
+          </div>
 
-        {isAdmin ? (
-          <button
-            type="button"
-            className="qq-button qq-button--primary qq-add-button"
-            onClick={() => setProductFormTarget("new")}
-          >
-            + Agregar producto
-          </button>
-        ) : null}
-      </div>
+          <main className="qq-main">
+            {error ? <p className="qq-error qq-error--center">{error}</p> : null}
 
-      <main className="qq-main">
-        {error ? <p className="qq-error qq-error--center">{error}</p> : null}
+            {!error && isLoading ? <p className="qq-hint">Cargando...</p> : null}
 
-        {!error && isLoading ? <p className="qq-hint">Cargando...</p> : null}
+            {!error && !isLoading && visibleProducts.length === 0 ? (
+              <p className="qq-hint">
+                {query.trim()
+                  ? `No se encontraron productos para "${query.trim()}".`
+                  : selectedGenre
+                    ? "No hay productos cargados en esta categoría todavía."
+                    : "Todavía no hay productos cargados."}
+              </p>
+            ) : null}
 
-        {!error && !isLoading && visibleProducts.length === 0 ? (
-          <p className="qq-hint">
-            {query.trim()
-              ? `No se encontraron productos para "${query.trim()}".`
-              : selectedGenre
-                ? "No hay productos cargados en esta categoría todavía."
-                : "Todavía no hay productos cargados."}
-          </p>
-        ) : null}
-
-        <div className="qq-grid">
-          {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
-          ))}
-        </div>
-      </main>
+            <div className="qq-grid">
+              {visibleProducts.map((product) => (
+                <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
+              ))}
+            </div>
+          </main>
+        </>
+      )}
 
       <WhatsAppButton />
 
