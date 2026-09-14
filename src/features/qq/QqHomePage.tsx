@@ -104,15 +104,19 @@ export function QqHomePage() {
 
   return (
     <div className="qq-shell">
-      {/* Hero clasico: la foto ocupa la mitad de arriba (con el header
-          encima) y se va apagando hasta fundirse con el fondo oscuro de
-          abajo, donde viven el buscador y las tarjetas. */}
-      {/* Foto de fondo del hero: se sirve directo desde public/ (no
-          empaquetada por Vite), con el nombre tal cual la sube el cliente
-          -- asi confirmamos (15/09/2026) que carga bien y sin lios de
-          cache. Si el cliente manda otra foto nueva, se reemplaza este
-          nombre de archivo aca. */}
-      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)` }}>
+      {/* Foto de fondo de TODA la pagina (no solo del hero) -- fija a la
+          ventana, el contenido scrollea por encima. Se sirve directo
+          desde public/ (no empaquetada por Vite), con el nombre tal cual
+          la sube el cliente -- asi confirmamos (15/09/2026) que carga
+          bien y sin lios de cache. Si el cliente manda otra foto nueva,
+          se reemplaza este nombre de archivo aca. */}
+      <div className="qq-page-backdrop" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)` }} />
+
+      {/* Hero: header arriba con aire, sobre la foto de fondo fija. Se va
+          oscureciendo hacia abajo (ver .qq-page-backdrop::after) hasta
+          hacer contraste con el buscador y las tarjetas, sin dejar de
+          ser la misma foto. */}
+      <div className="qq-hero">
         <Header
           session={session}
           cartCount={getCartCount(cartItems)}

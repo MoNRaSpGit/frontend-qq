@@ -20,13 +20,7 @@
 
 body {
   margin: 0;
-  /* Manchas de color grandes y suaves sobre el fondo oscuro -- da algo
-     de vida al resto de la pagina (abajo del hero), sin competir con la
-     foto de arriba. */
-  background:
-    radial-gradient(1100px 750px at 12% -8%, rgba(122, 13, 22, 0.22), transparent 60%),
-    radial-gradient(1000px 700px at 92% 6%, rgba(13, 63, 158, 0.18), transparent 60%),
-    var(--color-bg);
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -37,45 +31,52 @@ button {
 }
 
 .qq-shell {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Hero clasico: foto real del cliente ocupando la mitad de arriba de la
-   pagina, con el header encima -- se va apagando con un degrade hasta
-   fundirse en el fondo oscuro solido de abajo (donde estan el buscador
-   y las tarjetas). El degrade es un pseudo-elemento aparte (no el
-   background de .qq-hero) para poder ponerlo ENCIMA de la foto pero
-   DEBAJO del contenido del header, que necesita leerse bien. */
-.qq-hero {
-  position: relative;
-  min-height: 46vh;
+/* La foto es el fondo de TODA la web, no solo de la franja de arriba --
+   pedido explicito (15/09/2026): "la imagen es el 100% de la web".
+   Fija a la ventana (no a la pagina) asi el contenido larga scrollea
+   por encima sin que la foto se corte ni se estire. Va SIEMPRE detras
+   de todo (z-index -1). */
+.qq-page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background-position: center 22%;
   background-size: cover;
   background-repeat: no-repeat;
-  display: flex;
-  flex-direction: column;
 }
 
-.qq-hero::after {
+.qq-page-backdrop::after {
   content: "";
   position: absolute;
   inset: 0;
-  /* Oscuro solo arriba (detras del header, para que se lea bien) y
-     transparente en el resto -- la foto se ve en su color natural --
-     hasta fundirse con el fondo oscuro solido justo en el borde de
-     abajo. Pedido explicito (15/09/2026): "dejame verla primero color
-     natural". */
+  /* Arriba (detras del header) casi natural, y recien mas oscuro hacia
+     la mitad de abajo (donde viven el buscador y las tarjetas) para que
+     los productos hagan contraste -- pero sigue siendo la MISMA foto de
+     fondo, nunca un corte a color solido. */
   background: linear-gradient(
     180deg,
-    rgba(6, 6, 7, 0.45) 0%,
-    rgba(6, 6, 7, 0.12) 16%,
-    rgba(6, 6, 7, 0) 28%,
-    rgba(6, 6, 7, 0) 82%,
-    var(--color-bg) 100%
+    rgba(6, 6, 7, 0.35) 0%,
+    rgba(6, 6, 7, 0.1) 14%,
+    rgba(6, 6, 7, 0.15) 40%,
+    rgba(6, 6, 7, 0.62) 62%,
+    rgba(6, 6, 7, 0.78) 100%
   );
-  pointer-events: none;
+}
+
+/* Hero: ya no tiene imagen propia (la pone .qq-page-backdrop, fija
+   detras de toda la pagina) -- esto solo reserva el alto de la franja
+   de arriba para que el header tenga aire antes del buscador. */
+.qq-hero {
+  position: relative;
+  min-height: 46vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Barra propia (semi-transparente + blur) para que el header se note
