@@ -99,11 +99,11 @@ button {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 }
 
-.qq-brand {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: var(--color-accent);
+.qq-brand-logo {
+  height: 42px;
+  width: auto;
+  border-radius: 8px;
+  display: block;
 }
 
 .qq-nav {

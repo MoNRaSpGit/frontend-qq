@@ -31,7 +31,7 @@ export function Header({ session, cartCount, selectedGenre, onSelectGenre, onIni
 
   return (
     <header className="qq-header">
-      <span className="qq-brand">QQ</span>
+      <img className="qq-brand-logo" src={`${import.meta.env.BASE_URL}logoNegro.png`} alt="Qq Digital" />
 
       <nav className="qq-nav">
         <button type="button" className="qq-nav-link" onClick={onInicio}>
