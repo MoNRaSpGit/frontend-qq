@@ -1,18 +1,26 @@
 import { useState } from "react";
+import { getProductImageSrc } from "../qq.client";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
 type ProductDetailModalProps = {
   product: QqProduct;
+  isAdmin: boolean;
   onCerrar: () => void;
   onAgregarAlCarrito: (product: QqProduct, quantity: number) => void;
+  onEditar: (product: QqProduct) => void;
+  onEliminar: (product: QqProduct) => void;
 };
 
 // Se abre al clickear una tarjeta -- ahi (y solo ahi) se ve el precio y
-// la descripcion. Pedido explicito (15/09/2026).
-export function ProductDetailModal({ product, onCerrar, onAgregarAlCarrito }: ProductDetailModalProps) {
+// la descripcion. Pedido explicito (15/09/2026): precio siempre en pesos
+// y siempre mensual, y si el logueado es administrador, tambien puede
+// editar/eliminar el producto desde aca mismo.
+export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarrito, onEditar, onEliminar }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const theme = getProductTheme(product);
+  const imageSrc = getProductImageSrc(product);
 
   return (
     <div className="qq-modal-overlay" onClick={onCerrar}>
@@ -21,9 +29,9 @@ export function ProductDetailModal({ product, onCerrar, onAgregarAlCarrito }: Pr
           ×
         </button>
 
-        <div className="qq-detail-media" style={product.imageUrl ? undefined : { background: theme.gradient }}>
-          {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} />
+        <div className="qq-detail-media" style={imageSrc ? undefined : { background: theme.gradient }}>
+          {imageSrc ? (
+            <img src={imageSrc} alt={product.name} />
           ) : (
             <span className="qq-detail-media-wordmark" style={{ color: theme.textColor }}>
               {product.name}
@@ -37,27 +45,54 @@ export function ProductDetailModal({ product, onCerrar, onAgregarAlCarrito }: Pr
           {product.description ? <p className="qq-detail-description">{product.description}</p> : null}
 
           <div className="qq-detail-price">
-            {product.currency} {product.price.toFixed(2)}
+            ${product.price.toFixed(0)} <span className="qq-detail-price-suffix">/mes</span>
           </div>
 
-          <div className="qq-detail-actions">
-            <div className="qq-qty-stepper">
-              <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} aria-label="Restar">
-                −
-              </button>
-              <span>{quantity}</span>
-              <button type="button" onClick={() => setQuantity((current) => current + 1)} aria-label="Sumar">
-                +
-              </button>
+          {confirmandoEliminar ? (
+            <div className="qq-confirm-delete">
+              <p>¿Eliminar "{product.name}"? No se puede deshacer.</p>
+              <div className="qq-modal-actions">
+                <button type="button" className="qq-button qq-button--ghost" onClick={() => setConfirmandoEliminar(false)}>
+                  Cancelar
+                </button>
+                <button type="button" className="qq-button qq-button--danger" onClick={() => onEliminar(product)}>
+                  Eliminar
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              className="qq-button qq-button--primary qq-detail-add"
-              onClick={() => onAgregarAlCarrito(product, quantity)}
-            >
-              Agregar al carrito
-            </button>
-          </div>
+          ) : (
+            <>
+              <div className="qq-detail-actions">
+                <div className="qq-qty-stepper">
+                  <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} aria-label="Restar">
+                    −
+                  </button>
+                  <span>{quantity}</span>
+                  <button type="button" onClick={() => setQuantity((current) => current + 1)} aria-label="Sumar">
+                    +
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="qq-button qq-button--primary qq-detail-add"
+                  onClick={() => onAgregarAlCarrito(product, quantity)}
+                >
+                  Agregar al carrito
+                </button>
+              </div>
+
+              {isAdmin ? (
+                <div className="qq-detail-admin-actions">
+                  <button type="button" className="qq-button qq-button--ghost" onClick={() => onEditar(product)}>
+                    Editar
+                  </button>
+                  <button type="button" className="qq-button qq-button--danger" onClick={() => setConfirmandoEliminar(true)}>
+                    Eliminar
+                  </button>
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
     </div>

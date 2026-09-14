@@ -30,9 +30,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                 <div className="qq-cart-row" key={item.product.id}>
                   <div className="qq-cart-row-info">
                     <span className="qq-cart-row-name">{item.product.name}</span>
-                    <span className="qq-cart-row-price">
-                      {item.product.currency} {item.product.price.toFixed(2)} c/u
-                    </span>
+                    <span className="qq-cart-row-price">${item.product.price.toFixed(0)} /mes c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
                     <button type="button" onClick={() => onCambiarCantidad(item.product.id, item.quantity - 1)} aria-label="Restar">
@@ -53,8 +51,8 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
             <div className="qq-cart-totals">
               {totals.map((total) => (
                 <div key={total.currency} className="qq-cart-total-line">
-                  <span>Total {total.currency}</span>
-                  <strong>{total.total.toFixed(2)}</strong>
+                  <span>Total mensual</span>
+                  <strong>${total.total.toFixed(0)} /mes</strong>
                 </div>
               ))}
             </div>

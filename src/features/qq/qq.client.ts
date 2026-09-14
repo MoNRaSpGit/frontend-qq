@@ -20,6 +20,16 @@ function authHeaders(token: string): HeadersInit {
   return { Authorization: `Bearer ${token}` };
 }
 
+// Si el admin subio una foto, se sirve desde el backend (binario, no
+// base64 en el JSON del producto); si no, se usa la URL externa vieja
+// (compatibilidad) o null si no tiene ninguna.
+export function getProductImageSrc(product: Pick<QqProduct, "id" | "hasImage" | "imageUrl">): string | null {
+  if (product.hasImage) {
+    return buildUrl(`/qq/products/${product.id}/image`);
+  }
+  return product.imageUrl;
+}
+
 export async function listProducts(search?: string) {
   const query = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
   const response = await fetch(buildUrl(`/qq/products${query}`));
@@ -76,6 +86,16 @@ export async function deleteProduct(token: string, productId: number) {
     headers: authHeaders(token)
   });
   await readJson<{ ok: boolean }>(response);
+}
+
+export async function uploadProductImage(token: string, productId: number, dataUri: string) {
+  const response = await fetch(buildUrl(`/qq/products/${productId}/image`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ dataUri })
+  });
+  const data = await readJson<{ item: QqProduct }>(response);
+  return data.item;
 }
 
 export async function registerUser(payload: { email: string; password: string; fullName?: string }) {

@@ -16,6 +16,7 @@ export type QqProduct = {
   price: number;
   currency: string;
   imageUrl: string | null;
+  hasImage: boolean;
   category: string | null;
   status: QqProductStatus;
   createdAt: string;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { listProducts, logoutUser } from "./qq.client";
+import { deleteProduct, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AuthModal } from "./components/AuthModal";
 import { CartDrawer } from "./components/CartDrawer";
@@ -27,7 +27,10 @@ export function QqHomePage() {
   const [products, setProducts] = useState<QqProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
+  // "new" = alta; un QqProduct = edicion de ese producto; null = cerrado.
+  // Un solo estado para las dos cosas -- mismo modal (ver
+  // ProductFormModal), pedido 15/09/2026.
+  const [productFormTarget, setProductFormTarget] = useState<QqProduct | "new" | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<QqProduct | null>(null);
   const [cartItems, setCartItems] = useState<QqCartItem[]>(() => loadCart());
@@ -80,6 +83,23 @@ export function QqHomePage() {
     setCartItems((current) => addToCart(current, product, quantity));
     setSelectedProduct(null);
     toast.success(`"${product.name}" se agregó al carrito.`);
+  }
+
+  function handleEditar(product: QqProduct) {
+    setSelectedProduct(null);
+    setProductFormTarget(product);
+  }
+
+  async function handleEliminar(product: QqProduct) {
+    if (!session) return;
+    try {
+      await deleteProduct(session.token, product.id);
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+      setSelectedProduct(null);
+      toast.success(`"${product.name}" se eliminó.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo eliminar el producto.");
+    }
   }
 
   return (
@@ -137,7 +157,11 @@ export function QqHomePage() {
         </div>
 
         {isAdmin ? (
-          <button type="button" className="qq-button qq-button--primary qq-add-button" onClick={() => setShowAddModal(true)}>
+          <button
+            type="button"
+            className="qq-button qq-button--primary qq-add-button"
+            onClick={() => setProductFormTarget("new")}
+          >
             + Agregar producto
           </button>
         ) : null}
@@ -170,8 +194,11 @@ export function QqHomePage() {
       {selectedProduct ? (
         <ProductDetailModal
           product={selectedProduct}
+          isAdmin={isAdmin}
           onCerrar={() => setSelectedProduct(null)}
           onAgregarAlCarrito={handleAgregarAlCarrito}
+          onEditar={handleEditar}
+          onEliminar={(product) => void handleEliminar(product)}
         />
       ) : null}
 
@@ -188,14 +215,18 @@ export function QqHomePage() {
         />
       ) : null}
 
-      {showAddModal && session ? (
+      {productFormTarget && session ? (
         <ProductFormModal
           token={session.token}
-          onCancelar={() => setShowAddModal(false)}
+          product={productFormTarget === "new" ? undefined : productFormTarget}
+          onCancelar={() => setProductFormTarget(null)}
           onGuardado={(product) => {
-            setShowAddModal(false);
-            setProducts((current) => [product, ...current]);
-            toast.success(`"${product.name}" se agregó correctamente.`);
+            const wasEditing = productFormTarget !== "new";
+            setProductFormTarget(null);
+            setProducts((current) =>
+              wasEditing ? current.map((item) => (item.id === product.id ? product : item)) : [product, ...current]
+            );
+            toast.success(wasEditing ? `"${product.name}" se actualizó.` : `"${product.name}" se agregó correctamente.`);
           }}
         />
       ) : null}

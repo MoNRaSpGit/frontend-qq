@@ -64,13 +64,20 @@ button {
   pointer-events: none;
 }
 
+/* Barra propia (semi-transparente + blur) para que el header se note
+   bien SIEMPRE, sea cual sea la foto de fondo -- pedido 15/09/2026: "no
+   se nota bien el encabezado". */
 .qq-header {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 28px;
+  padding: 16px 28px;
+  background: rgba(8, 8, 9, 0.45);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 }
 
 .qq-brand {
@@ -379,6 +386,11 @@ button {
   color: var(--color-text);
 }
 
+.qq-button--danger {
+  background: var(--color-danger);
+  color: #2a0a07;
+}
+
 .qq-button:disabled {
   opacity: 0.6;
   cursor: default;
@@ -432,6 +444,49 @@ button {
   display: grid;
   grid-template-columns: 1fr 100px;
   gap: 12px;
+}
+
+.qq-field select {
+  min-height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 0 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.qq-field select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+/* Selector de imagen con vista previa -- boton propio en vez del input
+   nativo (feo y distinto en cada navegador). */
+.qq-image-picker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.qq-image-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.qq-image-preview--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  text-align: center;
 }
 
 .qq-field input,
@@ -557,11 +612,41 @@ button {
   margin-top: 14px;
 }
 
+.qq-detail-price-suffix {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
 .qq-detail-actions {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-top: 16px;
+}
+
+.qq-detail-admin-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.qq-detail-admin-actions .qq-button {
+  flex: 1;
+}
+
+.qq-confirm-delete {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.qq-confirm-delete p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 0 0 12px;
 }
 
 .qq-detail-add {
