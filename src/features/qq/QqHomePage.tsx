@@ -107,7 +107,11 @@ export function QqHomePage() {
       {/* Hero clasico: la foto ocupa la mitad de arriba (con el header
           encima) y se va apagando hasta fundirse con el fondo oscuro de
           abajo, donde viven el buscador y las tarjetas. */}
-      <div className="qq-hero">
+      {/* Prueba puntual (15/09/2026): imagen servida directo desde public/
+          (fondo.png) en vez de importada desde src/assets, para descartar
+          que el problema sea el bundling -- si esto tampoco se ve, el
+          problema no es de donde sale la imagen. */}
+      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondo.png)` }}>
         <Header
           session={session}
           cartCount={getCartCount(cartItems)}

@@ -51,7 +51,9 @@ button {
 .qq-hero {
   position: relative;
   min-height: 46vh;
-  background: url("../assets/qq-background.png") center 22% / cover no-repeat;
+  background-position: center 22%;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
 }
