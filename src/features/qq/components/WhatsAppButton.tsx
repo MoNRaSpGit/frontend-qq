@@ -1,3 +1,5 @@
+import { buildWhatsAppHref } from "../qq.whatsapp";
+
 // Boton flotante que abre un chat de WhatsApp directo. Pedido explicito
 // (15/09/2026), con la misma receta que ya charlamos antes en el
 // monorepo para que abra bien en cualquier dispositivo:
@@ -11,16 +13,7 @@
 // desde el navegador interno de Instagram/Facebook, esas apps bloquean
 // a proposito el salto a WhatsApp -- no es algo que se pueda arreglar
 // desde el codigo del sitio.
-const WHATSAPP_RAW_NUMBER = "092 945 696";
-const WHATSAPP_MESSAGE = "Hola! Quiero consultar por una cuenta/perfil.";
-
-function toWhatsAppNumber(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
-  const withoutLeadingZero = digits.replace(/^0+/, "");
-  return withoutLeadingZero.startsWith("598") ? withoutLeadingZero : `598${withoutLeadingZero}`;
-}
-
-const WHATSAPP_HREF = `https://wa.me/${toWhatsAppNumber(WHATSAPP_RAW_NUMBER)}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+const WHATSAPP_HREF = buildWhatsAppHref("Hola! Quiero consultar por una cuenta/perfil.");
 
 export function WhatsAppButton() {
   return (

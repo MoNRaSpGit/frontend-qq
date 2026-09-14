@@ -1,4 +1,5 @@
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
+import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 
 type CartDrawerProps = {
   items: QqCartItem[];
@@ -56,6 +57,18 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                 </div>
               ))}
             </div>
+
+            {/* El link ya trae escrito, listo para mandar, el detalle de
+                lo que hay en el carrito -- pedido explicito (15/09/2026):
+                que el cliente no tenga que volver a escribirlo. */}
+            <a
+              href={buildWhatsAppHref(buildCartWhatsAppMessage(items))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="qq-button qq-button--whatsapp qq-cart-whatsapp"
+            >
+              Comprar por WhatsApp
+            </a>
 
             <div className="qq-modal-actions">
               <button type="button" className="qq-button qq-button--ghost" onClick={onVaciar}>

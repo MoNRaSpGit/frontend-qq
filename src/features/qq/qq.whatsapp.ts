@@ -1,0 +1,30 @@
+import type { QqCartItem } from "./qq.cart";
+
+// Numero real del cliente (092 945 696) en formato internacional para
+// wa.me -- misma receta que ya usamos en el resto del monorepo: solo
+// digitos, sin "+" ni espacios, prefijo 598 si no lo tiene.
+const WHATSAPP_RAW_NUMBER = "092 945 696";
+
+export function toWhatsAppNumber(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  const withoutLeadingZero = digits.replace(/^0+/, "");
+  return withoutLeadingZero.startsWith("598") ? withoutLeadingZero : `598${withoutLeadingZero}`;
+}
+
+export const QQ_WHATSAPP_NUMBER = toWhatsAppNumber(WHATSAPP_RAW_NUMBER);
+
+export function buildWhatsAppHref(message: string): string {
+  return `https://wa.me/${QQ_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+// Arma el mensaje ya "engatillado" con los productos del carrito -- pedido
+// explicito (15/09/2026): que el cliente no tenga que escribir de nuevo lo
+// que ya eligio en el carrito.
+export function buildCartWhatsAppMessage(items: QqCartItem[]): string {
+  const lines = items.map((item) => {
+    const subtitle = item.quantity > 1 ? ` x${item.quantity}` : "";
+    return `- ${item.product.name}${subtitle} ($${item.product.price.toFixed(0)}/mes)`;
+  });
+
+  return ["Hola! Me gustaría comprar estos productos:", "", ...lines].join("\n");
+}

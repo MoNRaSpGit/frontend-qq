@@ -497,6 +497,29 @@ button {
   color: #2a0a07;
 }
 
+/* Verde oficial de WhatsApp -- se usa en el boton "Comprar por
+   WhatsApp" del carrito (pedido 15/09/2026), separado del celeste que
+   ya usa el buscador para no confundir los dos significados. */
+.qq-button--whatsapp {
+  background: #25d366;
+  color: #08340f;
+}
+
+.qq-button--whatsapp:hover {
+  background: #1ebe5a;
+}
+
+.qq-cart-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 6px;
+  text-decoration: none;
+  font-size: 15px;
+}
+
 .qq-button:disabled {
   opacity: 0.6;
   cursor: default;
