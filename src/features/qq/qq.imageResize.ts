@@ -15,7 +15,11 @@
 // es exactamente lo que se va a ver, sin sorpresas.
 const CANVAS_SIZE = 640;
 const JPEG_QUALITY = 0.85;
-const LETTERBOX_BACKGROUND = "#1c1c1f";
+// Negro puro -- el cliente sube sus imagenes con fondo negro solido de
+// por si, asi que lo que se rellena alrededor (cuando la foto no es
+// cuadrada) tiene que ser el MISMO negro para que no se note la costura
+// (pedido explicito, 15/09/2026: "relleno con fondo gris... no pega").
+const LETTERBOX_BACKGROUND = "#000000";
 
 export async function resizeImageFile(file: File): Promise<string> {
   const originalDataUri = await readFileAsDataUri(file);
