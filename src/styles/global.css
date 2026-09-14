@@ -105,6 +105,14 @@ button {
   display: block;
 }
 
+.qq-brand-logo-button {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
 .qq-nav {
   display: flex;
   gap: 6px;
@@ -229,6 +237,28 @@ button {
 @media (max-width: 640px) {
   .qq-nav {
     display: none;
+  }
+}
+
+/* Reemplaza al boton "Ingresar" (sacado del header, pedido explicito
+   15/09/2026: ahora se entra apretando el logo) -- SOLO en celular,
+   para que el visitante tenga un acceso directo a WhatsApp ahi mismo
+   sin que moleste el resto del header. En PC, sin sesion, el
+   header-right queda unicamente con el carrito. */
+.qq-header-whatsapp {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #06210f;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .qq-header-whatsapp {
+    display: flex;
   }
 }
 
@@ -1049,14 +1079,12 @@ button {
     padding: 0 16px 32px;
   }
 
-  /* En el celular la pantalla es mas chica y el boton flotante abajo
-     quedaba pegado a las tarjetas -- pedido explicito (15/09/2026): que
-     salga mas arriba, cerca del header, para que no moleste mientras se
-     mira el catalogo. */
+  /* En celular el WhatsApp ya vive adentro del header (.qq-header-whatsapp,
+     en el lugar del viejo boton "Ingresar") -- pedido explicito
+     (15/09/2026). El flotante de abajo queda solo para PC/tablet, asi no
+     se repite el mismo boton dos veces en la misma pantalla. */
   .qq-whatsapp-button {
-    right: 14px;
-    bottom: auto;
-    top: 96px;
+    display: none;
   }
 
   .qq-whatsapp-button span {

@@ -13,8 +13,14 @@ type AuthModalProps = {
 // aca.
 export function AuthModal({ onCancelar, onIngresado }: AuthModalProps) {
   const [modo, setModo] = useState<"login" | "registro">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Precargado TEMPORAL con las credenciales del admin, pedido explicito
+  // (15/09/2026): "para entrar rapido ahora porque estoy probando" --
+  // SOLO en modo desarrollo local (import.meta.env.DEV), nunca en el
+  // build que se publica -- si esto se precargara tambien en produccion,
+  // la contraseña del admin quedaria visible en el codigo JS publico del
+  // sitio para cualquiera que abra el inspector del navegador.
+  const [email, setEmail] = useState(import.meta.env.DEV ? "admin@qq.com" : "");
+  const [password, setPassword] = useState(import.meta.env.DEV ? "QQadmin2026!" : "");
   const [fullName, setFullName] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
