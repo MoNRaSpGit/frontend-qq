@@ -18,7 +18,7 @@ type HeaderProps = {
 // botones visibles (pedido tal cual) que por ahora solo avisan que viene
 // despues, en vez de romper o navegar a una pagina vacia.
 //
-// "Caracteristicas" (15/09/2026): antes los chips de genero (Cine/Musica/
+// "Categorias" (15/09/2026): antes los chips de genero (Cine/Musica/
 // Juegos) vivian al lado del buscador -- pedido explicito de sacarlos de
 // ahi y ponerlos en un desplegable propio del header.
 export function Header({ session, cartCount, selectedGenre, onSelectGenre, onInicio, onIngresar, onSalir, onAbrirCarrito }: HeaderProps) {
@@ -44,7 +44,7 @@ export function Header({ session, cartCount, selectedGenre, onSelectGenre, onIni
             className={selectedGenre ? "qq-nav-link is-active" : "qq-nav-link"}
             onClick={() => setShowFeatures((current) => !current)}
           >
-            Características
+            Categorías
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.4" className="qq-features-caret">
               <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

@@ -256,8 +256,9 @@ button {
   padding: 0 20px;
   text-align: center;
   font-size: 15.5px;
-  color: var(--color-text-muted);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+  color: var(--color-text);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.65);
 }
 
 /* Buscador centrado, protagonista de la pantalla -- mismo espiritu que
