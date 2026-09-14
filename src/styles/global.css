@@ -1049,9 +1049,14 @@ button {
     padding: 0 16px 32px;
   }
 
+  /* En el celular la pantalla es mas chica y el boton flotante abajo
+     quedaba pegado a las tarjetas -- pedido explicito (15/09/2026): que
+     salga mas arriba, cerca del header, para que no moleste mientras se
+     mira el catalogo. */
   .qq-whatsapp-button {
     right: 14px;
-    bottom: 14px;
+    bottom: auto;
+    top: 96px;
   }
 
   .qq-whatsapp-button span {
