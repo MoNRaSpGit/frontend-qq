@@ -107,12 +107,12 @@ export function QqHomePage() {
       {/* Hero clasico: la foto ocupa la mitad de arriba (con el header
           encima) y se va apagando hasta fundirse con el fondo oscuro de
           abajo, donde viven el buscador y las tarjetas. */}
-      {/* Prueba puntual (15/09/2026): imagen servida directo desde public/
-          (fondoDos.jpg, sin cambiarle nombre ni carpeta) en vez de
-          importada desde src/assets, para descartar que el problema sea
-          el bundling -- si esto tampoco se ve, el problema no es de donde
-          sale la imagen. */}
-      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoDos.jpg)` }}>
+      {/* Foto de fondo del hero: se sirve directo desde public/ (no
+          empaquetada por Vite), con el nombre tal cual la sube el cliente
+          -- asi confirmamos (15/09/2026) que carga bien y sin lios de
+          cache. Si el cliente manda otra foto nueva, se reemplaza este
+          nombre de archivo aca. */}
+      <div className="qq-hero" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCuatro.jpg)` }}>
         <Header
           session={session}
           cartCount={getCartCount(cartItems)}
