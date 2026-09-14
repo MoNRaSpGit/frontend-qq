@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { listProducts, logoutUser } from "./qq.client";
+import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AuthModal } from "./components/AuthModal";
+import { CartDrawer } from "./components/CartDrawer";
 import { Header } from "./components/Header";
 import { ProductCard } from "./components/ProductCard";
+import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqProduct } from "./qq.types";
@@ -12,8 +16,10 @@ import type { QqProduct } from "./qq.types";
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
 // (buscador arriba, grilla de tarjetas abajo). Se le suma el header
-// (marca, nav, ingresar) y el login/registro (15/09/2026) -- el resto de
-// las pantallas (editar producto, Blog, Contacto reales) se suman despues.
+// (marca, nav, ingresar) y el login/registro (15/09/2026), y despues
+// tarjeta cuadrada + detalle al click + carrito + WhatsApp flotante
+// (15/09/2026) -- el resto de las pantallas (editar producto, Blog,
+// Contacto reales) se suman despues.
 export function QqHomePage() {
   const [session, setSession] = useState<QqSession | null>(() => loadSession());
   const [query, setQuery] = useState("");
@@ -23,6 +29,9 @@ export function QqHomePage() {
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<QqProduct | null>(null);
+  const [cartItems, setCartItems] = useState<QqCartItem[]>(() => loadCart());
+  const [showCart, setShowCart] = useState(false);
 
   const isAdmin = session?.user.role === "administrador";
 
@@ -67,13 +76,26 @@ export function QqHomePage() {
     toast.success("Saliste de tu cuenta.");
   }
 
+  function handleAgregarAlCarrito(product: QqProduct, quantity: number) {
+    setCartItems((current) => addToCart(current, product, quantity));
+    setSelectedProduct(null);
+    toast.success(`"${product.name}" se agregó al carrito.`);
+  }
+
   return (
     <div className="qq-shell">
       {/* Hero clasico: la foto ocupa la mitad de arriba (con el header
           encima) y se va apagando hasta fundirse con el fondo oscuro de
           abajo, donde viven el buscador y las tarjetas. */}
       <div className="qq-hero">
-        <Header session={session} onInicio={handleInicio} onIngresar={() => setShowAuthModal(true)} onSalir={() => void handleSalir()} />
+        <Header
+          session={session}
+          cartCount={getCartCount(cartItems)}
+          onInicio={handleInicio}
+          onIngresar={() => setShowAuthModal(true)}
+          onSalir={() => void handleSalir()}
+          onAbrirCarrito={() => setShowCart(true)}
+        />
       </div>
 
       <div className="qq-search-wrap">
@@ -138,10 +160,33 @@ export function QqHomePage() {
 
         <div className="qq-grid">
           {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
           ))}
         </div>
       </main>
+
+      <WhatsAppButton />
+
+      {selectedProduct ? (
+        <ProductDetailModal
+          product={selectedProduct}
+          onCerrar={() => setSelectedProduct(null)}
+          onAgregarAlCarrito={handleAgregarAlCarrito}
+        />
+      ) : null}
+
+      {showCart ? (
+        <CartDrawer
+          items={cartItems}
+          onCerrar={() => setShowCart(false)}
+          onCambiarCantidad={(productId, quantity) => setCartItems((current) => updateCartQuantity(current, productId, quantity))}
+          onQuitar={(productId) => setCartItems((current) => removeFromCart(current, productId))}
+          onVaciar={() => {
+            setCartItems(clearCart());
+            toast.success("Carrito vaciado.");
+          }}
+        />
+      ) : null}
 
       {showAddModal && session ? (
         <ProductFormModal

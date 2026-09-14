@@ -102,6 +102,12 @@ button {
   background: rgba(255, 255, 255, 0.06);
 }
 
+.qq-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .qq-session {
   display: flex;
   align-items: center;
@@ -112,6 +118,42 @@ button {
   font-size: 14px;
   font-weight: 700;
   color: var(--color-text-muted);
+}
+
+.qq-cart-button {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: rgba(26, 26, 29, 0.7);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.qq-cart-button:hover {
+  border-color: var(--color-accent-dark);
+}
+
+.qq-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #141414;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
 }
 
 @media (max-width: 640px) {
@@ -246,40 +288,38 @@ button {
   padding: 20px 0;
 }
 
-/* Grilla de tarjetas -- estilo "poster" (2:3), como una fila/grilla de
-   peliculas en Netflix. */
+/* Grilla de tarjetas -- cuadradas, solo imagen + nombre (pedido
+   15/09/2026: nada de precio/categoria a la vista, eso vive en el
+   detalle al hacer click). */
 .qq-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
 }
 
 .qq-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
+  display: block;
+  background: none;
+  border: none;
   border-radius: var(--radius);
   overflow: hidden;
   padding: 0;
   cursor: pointer;
   text-align: left;
   color: var(--color-text);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .qq-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  background: var(--color-card-hover);
+  transform: translateY(-4px) scale(1.03);
   box-shadow: 0 18px 30px rgba(0, 0, 0, 0.45);
 }
 
 .qq-card-media {
-  aspect-ratio: 2 / 3;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
   background: linear-gradient(160deg, #2a2a2e, #17171a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
@@ -287,51 +327,27 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Wordmark simulado: mientras no haya imagen/logo real, cada tarjeta
-   muestra el nombre del producto bien grande sobre su degrade de color
-   (ver qq.theme.ts) -- funciona como placeholder con identidad propia. */
-.qq-card-media-mock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-align: center;
-  padding: 18px;
-  height: 100%;
-}
-
-.qq-card-media-wordmark {
-  font-size: clamp(15px, 2.1vw, 22px);
+/* Nombre superpuesto abajo de la imagen, con un velo oscuro atras para
+   que se lea bien sea cual sea la foto. */
+.qq-card-name-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px 12px 10px;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75) 70%);
+  font-size: 13.5px;
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-
-.qq-card-media-tagline {
-  font-size: 11.5px;
-  font-weight: 600;
-  opacity: 0.72;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.qq-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px 14px;
-}
-
-.qq-card-name {
-  font-weight: 700;
-  font-size: 14.5px;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .qq-card-category {
@@ -339,13 +355,6 @@ button {
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-}
-
-.qq-card-price {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--color-accent);
-  margin-top: 4px;
 }
 
 /* Botones */
@@ -456,6 +465,251 @@ button {
   margin-top: 8px;
 }
 
+/* Detalle de producto (se abre al clickear una tarjeta) */
+.qq-detail-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  /* "Se expande": entra con un pop de escala, para que se sienta que la
+     tarjeta crecio hasta convertirse en esto, sin la complejidad de
+     animar la transicion real entre la grilla y el modal. */
+  animation: qq-detail-pop 0.16s ease-out;
+}
+
+@keyframes qq-detail-pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.qq-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(10, 10, 11, 0.6);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qq-detail-media {
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(160deg, #2a2a2e, #17171a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 18px 18px 0 0;
+}
+
+.qq-detail-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qq-detail-media-wordmark {
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+  padding: 0 20px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.qq-detail-body {
+  padding: 20px 22px 24px;
+}
+
+.qq-detail-body h2 {
+  margin: 0 0 4px;
+  font-size: 21px;
+}
+
+.qq-detail-description {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+.qq-detail-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-accent);
+  margin-top: 14px;
+}
+
+.qq-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.qq-detail-add {
+  flex: 1;
+}
+
+.qq-qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 700;
+}
+
+.qq-qty-stepper button {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qq-qty-stepper span {
+  min-width: 18px;
+  text-align: center;
+}
+
+/* Carrito */
+.qq-cart-box {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.qq-cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.qq-cart-header h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.qq-cart-header .qq-detail-close {
+  position: static;
+}
+
+.qq-cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.qq-cart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.qq-cart-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.qq-cart-row-name {
+  font-weight: 700;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qq-cart-row-price {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.qq-cart-row-remove {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.qq-cart-totals {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  margin-bottom: 16px;
+}
+
+.qq-cart-total-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  padding: 2px 0;
+}
+
+/* Boton flotante de WhatsApp */
+.qq-whatsapp-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 12px 14px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #06210f;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 14px 28px rgba(37, 211, 102, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qq-whatsapp-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 32px rgba(37, 211, 102, 0.5);
+}
+
 @media (max-width: 480px) {
   .qq-header {
     padding: 16px 18px;
@@ -463,5 +717,14 @@ button {
 
   .qq-main {
     padding: 0 16px 32px;
+  }
+
+  .qq-whatsapp-button {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .qq-whatsapp-button span {
+    display: none;
   }
 }
