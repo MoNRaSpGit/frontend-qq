@@ -235,8 +235,15 @@ button {
 
 /* Titulo + bajada arriba del buscador, dentro del hero -- pedido
    explicito (15/09/2026). */
+.qq-hero-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
 .qq-hero-title {
-  margin: 8px 0 0;
+  margin: 0;
   padding: 0 20px;
   text-align: center;
   font-size: clamp(24px, 4vw, 38px);
@@ -246,7 +253,7 @@ button {
 }
 
 .qq-hero-subtitle {
-  margin: 6px 0 0;
+  margin: 0;
   padding: 0 20px;
   text-align: center;
   font-size: 15.5px;
@@ -288,43 +295,66 @@ button {
   color: #141414;
 }
 
+/* Pill unica: lupa "de adorno" a la izquierda (con su rayita
+   divisoria) + input + boton lupa celeste a la derecha, los tres
+   adentro del mismo contenedor -- pedido explicito (15/09/2026): "la
+   dejaste por afuera, ponela por dentro". */
 .qq-search-row {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   width: 100%;
   max-width: 720px;
-}
-
-.qq-search-input {
-  flex: 1;
-  min-width: 0;
   min-height: 54px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
   background: rgba(26, 26, 29, 0.75);
   backdrop-filter: blur(8px);
-  color: var(--color-text);
-  padding: 0 22px;
-  font-size: 17px;
-  outline: none;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qq-search-row:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(230, 179, 37, 0.18);
+}
+
+.qq-search-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qq-search-icon--left {
+  width: 46px;
+  height: 54px;
+  color: var(--color-text-muted);
+  border-right: 1px solid var(--color-border);
+}
+
+.qq-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 54px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding: 0 18px;
+  font-size: 17px;
+  outline: none;
 }
 
 .qq-search-input::placeholder {
   color: var(--color-text-muted);
 }
 
-.qq-search-input:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(230, 179, 37, 0.18);
-}
-
 .qq-search-button {
   flex-shrink: 0;
-  width: 54px;
-  height: 54px;
+  width: 42px;
+  height: 42px;
+  margin-right: 6px;
   border-radius: 999px;
   border: none;
   background: var(--color-celeste);

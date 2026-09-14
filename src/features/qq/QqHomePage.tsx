@@ -152,20 +152,31 @@ export function QqHomePage() {
           onAbrirCarrito={() => setShowCart(true)}
         />
 
-        <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
-        <p className="qq-hero-subtitle">Busca y consulta contenidos en tu plataforma de streaming favorita.</p>
       </div>
 
       <div className="qq-search-wrap">
+        <div className="qq-hero-heading">
+          <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
+          <p className="qq-hero-subtitle">Busca y consulta contenidos en tu plataforma de streaming favorita.</p>
+        </div>
+
         <form className="qq-search-row" ref={searchRowRef} onSubmit={(event) => event.preventDefault()}>
+          <span className="qq-search-icon qq-search-icon--left" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.2" y2="16.2" strokeLinecap="round" />
+            </svg>
+          </span>
+
           <input
             type="text"
             className="qq-search-input"
-            placeholder="Buscar producto..."
+            placeholder="Buscar películas, series, juegos"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             autoFocus
           />
+
           <button type="submit" className="qq-search-button" aria-label="Buscar">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4">
               <circle cx="11" cy="11" r="7" />
