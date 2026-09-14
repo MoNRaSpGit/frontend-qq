@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { deleteProduct, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
@@ -9,7 +9,7 @@ import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { WhatsAppButton } from "./components/WhatsAppButton";
-import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
+import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqProduct } from "./qq.types";
 
@@ -35,8 +35,26 @@ export function QqHomePage() {
   const [selectedProduct, setSelectedProduct] = useState<QqProduct | null>(null);
   const [cartItems, setCartItems] = useState<QqCartItem[]>(() => loadCart());
   const [showCart, setShowCart] = useState(false);
+  const searchRowRef = useRef<HTMLFormElement>(null);
+  const [fadeStart, setFadeStart] = useState<number | null>(null);
 
   const isAdmin = session?.user.role === "administrador";
+
+  // La foto de fondo (fija a la ventana) empieza a oscurecerse justo
+  // debajo del buscador -- pedido explicito (15/09/2026): "en la caja de
+  // abajo del input, ahi es la division". Se mide la posicion real del
+  // buscador (no un porcentaje fijo) para que la linea quede siempre
+  // pegada a el, sea cual sea el tamaño de pantalla.
+  useEffect(() => {
+    function measureFadeStart() {
+      if (!searchRowRef.current) return;
+      const rect = searchRowRef.current.getBoundingClientRect();
+      setFadeStart(rect.bottom + window.scrollY);
+    }
+    measureFadeStart();
+    window.addEventListener("resize", measureFadeStart);
+    return () => window.removeEventListener("resize", measureFadeStart);
+  }, []);
 
   // El genero (Cine/Musica/Juegos) filtra sobre lo que ya trajo el
   // buscador -- no pega al backend de nuevo, se resuelve en el momento a
@@ -110,7 +128,13 @@ export function QqHomePage() {
           la sube el cliente -- asi confirmamos (15/09/2026) que carga
           bien y sin lios de cache. Si el cliente manda otra foto nueva,
           se reemplaza este nombre de archivo aca. */}
-      <div className="qq-page-backdrop" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)` }} />
+      <div
+        className="qq-page-backdrop"
+        style={{
+          backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)`,
+          ...(fadeStart ? ({ "--qq-fade-start": `${fadeStart}px` } as Record<string, string>) : {})
+        }}
+      />
 
       {/* Hero: header arriba con aire, sobre la foto de fondo fija. Se va
           oscureciendo hacia abajo (ver .qq-page-backdrop::after) hasta
@@ -120,15 +144,20 @@ export function QqHomePage() {
         <Header
           session={session}
           cartCount={getCartCount(cartItems)}
+          selectedGenre={selectedGenre}
+          onSelectGenre={setSelectedGenre}
           onInicio={handleInicio}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
         />
+
+        <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
+        <p className="qq-hero-subtitle">Busca y consulta contenidos en tu plataforma de streaming favorita.</p>
       </div>
 
       <div className="qq-search-wrap">
-        <form className="qq-search-row" onSubmit={(event) => event.preventDefault()}>
+        <form className="qq-search-row" ref={searchRowRef} onSubmit={(event) => event.preventDefault()}>
           <input
             type="text"
             className="qq-search-input"
@@ -144,26 +173,6 @@ export function QqHomePage() {
             </svg>
           </button>
         </form>
-
-        <div className="qq-genre-chips" role="group" aria-label="Filtrar por categoría">
-          <button
-            type="button"
-            className={selectedGenre === null ? "qq-chip is-active" : "qq-chip"}
-            onClick={() => setSelectedGenre(null)}
-          >
-            Todos
-          </button>
-          {QQ_GENRES.map((genre) => (
-            <button
-              type="button"
-              key={genre.key}
-              className={selectedGenre === genre.key ? "qq-chip is-active" : "qq-chip"}
-              onClick={() => setSelectedGenre((current) => (current === genre.key ? null : genre.key))}
-            >
-              {genre.label}
-            </button>
-          ))}
-        </div>
 
         {isAdmin ? (
           <button

@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { toast } from "react-toastify";
+import { QQ_GENRES, type QqGenreKey } from "../qq.genres";
 import type { QqSession } from "../qq.session";
 
 type HeaderProps = {
   session: QqSession | null;
   cartCount: number;
+  selectedGenre: QqGenreKey | null;
+  onSelectGenre: (genre: QqGenreKey | null) => void;
   onInicio: () => void;
   onIngresar: () => void;
   onSalir: () => void;
@@ -13,7 +17,18 @@ type HeaderProps = {
 // "Blog" y "Contacto" todavia no tienen pantalla propia -- se dejan como
 // botones visibles (pedido tal cual) que por ahora solo avisan que viene
 // despues, en vez de romper o navegar a una pagina vacia.
-export function Header({ session, cartCount, onInicio, onIngresar, onSalir, onAbrirCarrito }: HeaderProps) {
+//
+// "Caracteristicas" (15/09/2026): antes los chips de genero (Cine/Musica/
+// Juegos) vivian al lado del buscador -- pedido explicito de sacarlos de
+// ahi y ponerlos en un desplegable propio del header.
+export function Header({ session, cartCount, selectedGenre, onSelectGenre, onInicio, onIngresar, onSalir, onAbrirCarrito }: HeaderProps) {
+  const [showFeatures, setShowFeatures] = useState(false);
+
+  function handleSelectGenre(genre: QqGenreKey | null) {
+    onSelectGenre(genre);
+    setShowFeatures(false);
+  }
+
   return (
     <header className="qq-header">
       <span className="qq-brand">QQ</span>
@@ -22,6 +37,42 @@ export function Header({ session, cartCount, onInicio, onIngresar, onSalir, onAb
         <button type="button" className="qq-nav-link" onClick={onInicio}>
           Inicio
         </button>
+
+        <div className="qq-features-dropdown">
+          <button
+            type="button"
+            className={selectedGenre ? "qq-nav-link is-active" : "qq-nav-link"}
+            onClick={() => setShowFeatures((current) => !current)}
+          >
+            Características
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.4" className="qq-features-caret">
+              <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {showFeatures ? (
+            <div className="qq-features-panel" role="group" aria-label="Filtrar por categoría">
+              <button
+                type="button"
+                className={selectedGenre === null ? "qq-chip is-active" : "qq-chip"}
+                onClick={() => handleSelectGenre(null)}
+              >
+                Todos
+              </button>
+              {QQ_GENRES.map((genre) => (
+                <button
+                  type="button"
+                  key={genre.key}
+                  className={selectedGenre === genre.key ? "qq-chip is-active" : "qq-chip"}
+                  onClick={() => handleSelectGenre(genre.key)}
+                >
+                  {genre.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
         <button type="button" className="qq-nav-link" onClick={() => toast.info("Blog: próximamente.")}>
           Blog
         </button>

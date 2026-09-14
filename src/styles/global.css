@@ -55,17 +55,21 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  /* Arriba (detras del header) casi natural, y recien mas oscuro hacia
-     la mitad de abajo (donde viven el buscador y las tarjetas) para que
-     los productos hagan contraste -- pero sigue siendo la MISMA foto de
-     fondo, nunca un corte a color solido. */
+  /* Arriba (detras del header) casi natural, y se mantiene asi hasta
+     justo DEBAJO del buscador -- ahi (--qq-fade-start, medido en JS con
+     la posicion real del buscador, ver QqHomePage.tsx) arranca la
+     transicion a mas oscuro, para que los productos hagan contraste.
+     Sigue siendo la MISMA foto de fondo, nunca un corte a color solido
+     -- pedido explicito (15/09/2026): "que se vea que hay imagen abajo,
+     que no sea negro". El fallback en vh es solo para el primer render,
+     antes de que el JS mida la posicion real. */
   background: linear-gradient(
     180deg,
-    rgba(6, 6, 7, 0.35) 0%,
-    rgba(6, 6, 7, 0.1) 14%,
-    rgba(6, 6, 7, 0.15) 40%,
-    rgba(6, 6, 7, 0.62) 62%,
-    rgba(6, 6, 7, 0.78) 100%
+    rgba(6, 6, 7, 0.4) 0,
+    rgba(6, 6, 7, 0.1) 90px,
+    rgba(6, 6, 7, 0.1) calc(var(--qq-fade-start, 46vh) - 10px),
+    rgba(6, 6, 7, 0.72) calc(var(--qq-fade-start, 46vh) + 130px),
+    rgba(6, 6, 7, 0.8) calc(var(--qq-fade-start, 46vh) + 340px)
   );
 }
 
@@ -122,6 +126,51 @@ button {
 .qq-nav-link:hover {
   color: var(--color-text);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.qq-nav-link.is-active {
+  color: var(--color-accent);
+}
+
+/* Desplegable "Caracteristicas" del header -- reemplaza a los chips de
+   genero que antes vivian al lado del buscador (pedido explicito
+   15/09/2026). */
+.qq-features-dropdown {
+  position: relative;
+}
+
+.qq-features-caret {
+  margin-left: 4px;
+  vertical-align: -1px;
+}
+
+.qq-features-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(20, 20, 22, 0.96);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  z-index: 5;
+}
+
+.qq-features-panel .qq-chip {
+  width: 100%;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .qq-features-panel {
+    left: auto;
+    right: 0;
+  }
 }
 
 .qq-header-right {
@@ -184,22 +233,35 @@ button {
   }
 }
 
+/* Titulo + bajada arriba del buscador, dentro del hero -- pedido
+   explicito (15/09/2026). */
+.qq-hero-title {
+  margin: 8px 0 0;
+  padding: 0 20px;
+  text-align: center;
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 800;
+  color: var(--color-text);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.qq-hero-subtitle {
+  margin: 6px 0 0;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 15.5px;
+  color: var(--color-text-muted);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
 /* Buscador centrado, protagonista de la pantalla -- mismo espiritu que
-   el buscador de Netflix (arriba, grande). Los chips de categoria van
-   pegados debajo, centrados junto al buscador. */
+   el buscador de Netflix (arriba, grande). */
 .qq-search-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   padding: 28px 20px 36px;
-}
-
-.qq-genre-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
 }
 
 .qq-chip {
