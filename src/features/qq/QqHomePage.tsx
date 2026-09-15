@@ -185,6 +185,18 @@ export function QqHomePage() {
           onAbrirCarrito={() => setShowCart(true)}
         />
 
+        {/* Pegado a la cabecera de verdad (adentro de .qq-hero, justo
+            despues del <Header>) -- pedido explicito (15/09/2026): "no
+            quedo pegado a la cabecera, quedo pegado al titulo del
+            buscador". El hero reserva un alto grande (46vh) para
+            lucir la foto de fondo antes del titulo/buscador; poniendo
+            el carrusel afuera de este div quedaba pegado al titulo en
+            vez de al header, por ese espacio de por medio. */}
+        {view === "catalogo" && !isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
+          <div className="qq-carousel-wrap">
+            <Carousel images={carouselImages} />
+          </div>
+        ) : null}
       </div>
 
       {view === "productos" && isAdmin ? (
@@ -207,14 +219,6 @@ export function QqHomePage() {
         />
       ) : (
         <>
-          {/* Justo debajo del header, ANTES del buscador -- pedido
-              explicito (15/09/2026): "el carrusel debe ir abajo de la
-              cabecera, no abajo del buscador". */}
-          {!isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
-            <div className="qq-carousel-wrap">
-              <Carousel images={carouselImages} />
-            </div>
-          ) : null}
 
           <div className="qq-search-wrap">
             <div className="qq-hero-heading">
