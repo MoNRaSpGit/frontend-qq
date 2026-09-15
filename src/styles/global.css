@@ -529,14 +529,11 @@ button {
    fecha de vencimiento (ver qq.clientStatus.ts): blanco (mas de 1 mes),
    amarillo (en el mes de vencer) y rojo (5 dias o menos / vencido). */
 .qq-client-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--color-border);
   border-left: 4px solid var(--color-border);
   background: rgba(30, 30, 34, 0.9);
+  overflow: hidden;
 }
 
 .qq-client-row--soon {
@@ -549,8 +546,39 @@ button {
   background: rgba(224, 85, 74, 0.1);
 }
 
+/* Colapsada: solo nombre + vencimiento -- pedido explicito
+   (15/09/2026): "deja solo el cliente con su vencimiento". El resto
+   (email/telefono/acciones) sale recien al hacerle click. */
+.qq-client-row-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.qq-client-row-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--color-border);
+  margin-top: -1px;
+  padding-top: 12px;
+}
+
+.qq-client-row-details .qq-admin-row-actions {
+  margin-top: 6px;
+}
+
 @media (max-width: 560px) {
-  .qq-client-row {
+  .qq-client-row-summary {
     flex-wrap: wrap;
   }
 }
