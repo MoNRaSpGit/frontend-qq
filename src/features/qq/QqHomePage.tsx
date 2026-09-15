@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteProduct, getCarouselImageSrc, listCarouselImages, listProducts, logoutUser } from "./qq.client";
+import { deleteProduct, listCarouselImages, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AdminCarouselPage } from "./components/AdminCarouselPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
+import { Carousel } from "./components/Carousel";
 import { CartDrawer } from "./components/CartDrawer";
 import { Header } from "./components/Header";
 import { ProductCard } from "./components/ProductCard";
@@ -14,14 +15,6 @@ import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqCarouselImage, QqProduct } from "./qq.types";
-
-// La foto original fija de public/ es SIEMPRE la primera del carrusel de
-// fondo -- pedido explicito (15/09/2026): "va a pasar la original
-// tambien... mas la que vaya colocando". Las que carga el admin (ver
-// AdminCarouselPage) se agregan despues de esta.
-const ORIGINAL_BACKGROUND_SRC = `${import.meta.env.BASE_URL}fondoCinco.jpg`;
-// Cuanto dura cada foto en pantalla antes de cruzar a la siguiente.
-const CAROUSEL_INTERVAL_MS = 7000;
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
@@ -45,7 +38,6 @@ export function QqHomePage() {
   const [carouselImages, setCarouselImages] = useState<QqCarouselImage[]>([]);
   const [isCarouselLoading, setIsCarouselLoading] = useState(true);
   const [carouselError, setCarouselError] = useState<string | null>(null);
-  const [activeSlide, setActiveSlide] = useState(0);
   // "new" = alta; un QqProduct = edicion de ese producto; null = cerrado.
   // Un solo estado para las dos cosas -- mismo modal (ver
   // ProductFormModal), pedido 15/09/2026.
@@ -119,19 +111,6 @@ export function QqHomePage() {
     void refreshCarousel();
   }, []);
 
-  // Fondo de TODA la pagina, fijo a la ventana: la foto original +
-  // las que cargo el admin, rotando una por una -- pedido explicito
-  // (15/09/2026): "que vayan cruzando, como hace el carrusel asi".
-  const backgroundSlides = [ORIGINAL_BACKGROUND_SRC, ...carouselImages.map((image) => getCarouselImageSrc(image.id))];
-
-  useEffect(() => {
-    if (backgroundSlides.length < 2) return;
-    const intervalId = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % backgroundSlides.length);
-    }, CAROUSEL_INTERVAL_MS);
-    return () => window.clearInterval(intervalId);
-  }, [backgroundSlides.length]);
-
   function handleInicio() {
     setView("catalogo");
     setQuery("");
@@ -173,24 +152,19 @@ export function QqHomePage() {
 
   return (
     <div className="qq-shell">
-      {/* Fondo de TODA la pagina (no solo del hero) -- fijo a la ventana,
-          el contenido scrollea por encima. La foto original se sirve
-          directo desde public/ (no empaquetada por Vite); las que carga
-          el admin en "Carrusel" se suman despues de ella y el fondo va
-          rotando entre todas, cruzando de una a la otra (pedido
-          explicito, 15/09/2026). */}
+      {/* Foto de fondo de TODA la pagina (no solo del hero) -- fija a la
+          ventana, el contenido scrollea por encima. Se sirve directo
+          desde public/ (no empaquetada por Vite). Pedido explicito
+          (15/09/2026): "dejemos la foto de fondo original" -- las fotos
+          que carga el admin en "Carrusel" van en su propia vidriera
+          horizontal dentro del catalogo (ver Carousel.tsx), no aca. */}
       <div
         className="qq-page-backdrop"
-        style={fadeStart ? ({ "--qq-fade-start": `${fadeStart}px` } as Record<string, string>) : undefined}
-      >
-        {backgroundSlides.map((src, index) => (
-          <div
-            key={src}
-            className="qq-page-backdrop-slide"
-            style={{ backgroundImage: `url(${src})`, opacity: index === activeSlide % backgroundSlides.length ? 1 : 0 }}
-          />
-        ))}
-      </div>
+        style={{
+          backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)`,
+          ...(fadeStart ? ({ "--qq-fade-start": `${fadeStart}px` } as Record<string, string>) : {})
+        }}
+      />
 
       {/* Hero: header arriba con aire, sobre la foto de fondo fija. Se va
           oscureciendo hacia abajo (ver .qq-page-backdrop::after) hasta
@@ -264,6 +238,12 @@ export function QqHomePage() {
               </button>
             </form>
           </div>
+
+          {!isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
+            <div className="qq-carousel-wrap">
+              <Carousel images={carouselImages} />
+            </div>
+          ) : null}
 
           <main className="qq-main">
             {error ? <p className="qq-error qq-error--center">{error}</p> : null}

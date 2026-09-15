@@ -46,18 +46,9 @@ button {
   position: fixed;
   inset: 0;
   z-index: -1;
-}
-
-/* Carrusel de fondos (15/09/2026): cada foto (la original + las que
-   carga el admin) es su propia capa superpuesta -- se cruzan con una
-   transicion de opacidad en vez de cortar de golpe de una a la otra. */
-.qq-page-backdrop-slide {
-  position: absolute;
-  inset: 0;
   background-position: center 22%;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: opacity 1.8s ease;
 }
 
 .qq-page-backdrop::after {
@@ -579,6 +570,111 @@ button {
   background: rgba(10, 10, 11, 0.85);
   text-align: center;
   font-size: 13px;
+}
+
+/* Carrusel clasico de imagenes destacadas (15/09/2026) -- vidriera
+   horizontal, propia y separada de la foto de fondo de la pagina (esa
+   sigue siendo siempre la original). Las fotos las carga el admin desde
+   su pestaña "Carrusel" (ver AdminCarouselPage.tsx). */
+.qq-carousel-wrap {
+  padding: 0 28px 8px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.qq-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qq-carousel-viewport {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
+.qq-carousel-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.qq-carousel-slide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.qq-carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.qq-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(10, 10, 11, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.qq-carousel-arrow:hover {
+  background: rgba(10, 10, 11, 0.8);
+}
+
+.qq-carousel-arrow--prev {
+  left: 12px;
+}
+
+.qq-carousel-arrow--next {
+  right: 12px;
+}
+
+.qq-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qq-carousel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-border);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.qq-carousel-dot.is-active {
+  background: var(--color-accent);
+  transform: scale(1.25);
+}
+
+@media (max-width: 640px) {
+  .qq-carousel-wrap {
+    padding: 0 16px 8px;
+  }
+
+  .qq-carousel-viewport {
+    aspect-ratio: 16 / 9;
+  }
 }
 
 .qq-main {
