@@ -9,6 +9,11 @@ export type QqUser = {
 
 export type QqProductStatus = "published" | "draft";
 
+export type QqCarouselImage = {
+  id: number;
+  createdAt: string;
+};
+
 export type QqProduct = {
   id: number;
   name: string;

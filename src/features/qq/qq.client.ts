@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../../shared/config/api";
-import type { QqProduct, QqProductStatus, QqUser } from "./qq.types";
+import type { QqCarouselImage, QqProduct, QqProductStatus, QqUser } from "./qq.types";
 
 function buildUrl(path: string) {
   return `${API_BASE_URL}/api/v1${path}`;
@@ -96,6 +96,37 @@ export async function uploadProductImage(token: string, productId: number, dataU
   });
   const data = await readJson<{ item: QqProduct }>(response);
   return data.item;
+}
+
+// Carrusel de fondos (15/09/2026): el admin carga fotos desde su propia
+// pestaña y el sitio va rotando entre ellas + la foto original fija de
+// public/ como fondo de toda la pagina (ver QqHomePage.tsx).
+export function getCarouselImageSrc(imageId: number): string {
+  return buildUrl(`/qq/carousel/${imageId}/image`);
+}
+
+export async function listCarouselImages() {
+  const response = await fetch(buildUrl("/qq/carousel"));
+  const data = await readJson<{ items: QqCarouselImage[] }>(response);
+  return data.items;
+}
+
+export async function addCarouselImage(token: string, dataUri: string) {
+  const response = await fetch(buildUrl("/qq/carousel"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ dataUri })
+  });
+  const data = await readJson<{ item: QqCarouselImage }>(response);
+  return data.item;
+}
+
+export async function deleteCarouselImage(token: string, imageId: number) {
+  const response = await fetch(buildUrl(`/qq/carousel/${imageId}`), {
+    method: "DELETE",
+    headers: authHeaders(token)
+  });
+  await readJson<{ ok: boolean }>(response);
 }
 
 export async function registerUser(payload: { email: string; password: string; fullName?: string }) {

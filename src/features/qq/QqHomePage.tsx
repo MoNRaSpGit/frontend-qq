@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteProduct, listProducts, logoutUser } from "./qq.client";
+import { deleteProduct, getCarouselImageSrc, listCarouselImages, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
+import { AdminCarouselPage } from "./components/AdminCarouselPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
 import { CartDrawer } from "./components/CartDrawer";
@@ -12,7 +13,15 @@ import { ProductFormModal } from "./components/ProductFormModal";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
-import type { QqProduct } from "./qq.types";
+import type { QqCarouselImage, QqProduct } from "./qq.types";
+
+// La foto original fija de public/ es SIEMPRE la primera del carrusel de
+// fondo -- pedido explicito (15/09/2026): "va a pasar la original
+// tambien... mas la que vaya colocando". Las que carga el admin (ver
+// AdminCarouselPage) se agregan despues de esta.
+const ORIGINAL_BACKGROUND_SRC = `${import.meta.env.BASE_URL}fondoCinco.jpg`;
+// Cuanto dura cada foto en pantalla antes de cruzar a la siguiente.
+const CAROUSEL_INTERVAL_MS = 7000;
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
@@ -27,12 +36,16 @@ export function QqHomePage() {
   // propia del admin para cargar/editar/borrar -- pedido explicito
   // (15/09/2026): "que no ingrese directo en la pantalla principal, que
   // tenga su propia pestaña".
-  const [view, setView] = useState<"catalogo" | "productos">("catalogo");
+  const [view, setView] = useState<"catalogo" | "productos" | "carrusel">("catalogo");
   const [query, setQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [carouselImages, setCarouselImages] = useState<QqCarouselImage[]>([]);
+  const [isCarouselLoading, setIsCarouselLoading] = useState(true);
+  const [carouselError, setCarouselError] = useState<string | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
   // "new" = alta; un QqProduct = edicion de ese producto; null = cerrado.
   // Un solo estado para las dos cosas -- mismo modal (ver
   // ProductFormModal), pedido 15/09/2026.
@@ -89,6 +102,36 @@ export function QqHomePage() {
     return () => window.clearTimeout(timeoutId);
   }, [query]);
 
+  async function refreshCarousel() {
+    setIsCarouselLoading(true);
+    try {
+      const items = await listCarouselImages();
+      setCarouselImages(items);
+      setCarouselError(null);
+    } catch (fetchError) {
+      setCarouselError(fetchError instanceof Error ? fetchError.message : "No se pudo cargar el carrusel.");
+    } finally {
+      setIsCarouselLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void refreshCarousel();
+  }, []);
+
+  // Fondo de TODA la pagina, fijo a la ventana: la foto original +
+  // las que cargo el admin, rotando una por una -- pedido explicito
+  // (15/09/2026): "que vayan cruzando, como hace el carrusel asi".
+  const backgroundSlides = [ORIGINAL_BACKGROUND_SRC, ...carouselImages.map((image) => getCarouselImageSrc(image.id))];
+
+  useEffect(() => {
+    if (backgroundSlides.length < 2) return;
+    const intervalId = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % backgroundSlides.length);
+    }, CAROUSEL_INTERVAL_MS);
+    return () => window.clearInterval(intervalId);
+  }, [backgroundSlides.length]);
+
   function handleInicio() {
     setView("catalogo");
     setQuery("");
@@ -130,19 +173,24 @@ export function QqHomePage() {
 
   return (
     <div className="qq-shell">
-      {/* Foto de fondo de TODA la pagina (no solo del hero) -- fija a la
-          ventana, el contenido scrollea por encima. Se sirve directo
-          desde public/ (no empaquetada por Vite), con el nombre tal cual
-          la sube el cliente -- asi confirmamos (15/09/2026) que carga
-          bien y sin lios de cache. Si el cliente manda otra foto nueva,
-          se reemplaza este nombre de archivo aca. */}
+      {/* Fondo de TODA la pagina (no solo del hero) -- fijo a la ventana,
+          el contenido scrollea por encima. La foto original se sirve
+          directo desde public/ (no empaquetada por Vite); las que carga
+          el admin en "Carrusel" se suman despues de ella y el fondo va
+          rotando entre todas, cruzando de una a la otra (pedido
+          explicito, 15/09/2026). */}
       <div
         className="qq-page-backdrop"
-        style={{
-          backgroundImage: `url(${import.meta.env.BASE_URL}fondoCinco.jpg)`,
-          ...(fadeStart ? ({ "--qq-fade-start": `${fadeStart}px` } as Record<string, string>) : {})
-        }}
-      />
+        style={fadeStart ? ({ "--qq-fade-start": `${fadeStart}px` } as Record<string, string>) : undefined}
+      >
+        {backgroundSlides.map((src, index) => (
+          <div
+            key={src}
+            className="qq-page-backdrop-slide"
+            style={{ backgroundImage: `url(${src})`, opacity: index === activeSlide % backgroundSlides.length ? 1 : 0 }}
+          />
+        ))}
+      </div>
 
       {/* Hero: header arriba con aire, sobre la foto de fondo fija. Se va
           oscureciendo hacia abajo (ver .qq-page-backdrop::after) hasta
@@ -157,6 +205,7 @@ export function QqHomePage() {
           activeView={view}
           onInicio={handleInicio}
           onProductos={() => setView("productos")}
+          onCarrusel={() => setView("carrusel")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
@@ -172,6 +221,15 @@ export function QqHomePage() {
           onNuevo={() => setProductFormTarget("new")}
           onEditar={handleEditar}
           onEliminar={(product) => void handleEliminar(product)}
+        />
+      ) : view === "carrusel" && isAdmin && session ? (
+        <AdminCarouselPage
+          token={session.token}
+          images={carouselImages}
+          isLoading={isCarouselLoading}
+          error={carouselError}
+          onAgregada={(image) => setCarouselImages((current) => [...current, image])}
+          onEliminada={(imageId) => setCarouselImages((current) => current.filter((item) => item.id !== imageId))}
         />
       ) : (
         <>

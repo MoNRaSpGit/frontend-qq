@@ -48,6 +48,34 @@ export async function resizeImageFile(file: File): Promise<string> {
   return canvas.toDataURL("image/jpeg", JPEG_QUALITY);
 }
 
+// Para las fotos de fondo del carrusel (15/09/2026) -- a diferencia de
+// la tarjeta, el fondo NO es cuadrado, asi que aca no hay que
+// "encajarla" en ningun lienzo: solo achicarla si es mas ancha que lo
+// que hace falta para verse bien en pantalla, sin recortar ni rellenar
+// nada (misma foto, mismas proporciones, solo mas liviana).
+const BACKGROUND_MAX_WIDTH = 1920;
+const BACKGROUND_JPEG_QUALITY = 0.82;
+
+export async function resizeBackgroundImageFile(file: File): Promise<string> {
+  const originalDataUri = await readFileAsDataUri(file);
+  const image = await loadImage(originalDataUri);
+
+  const scale = Math.min(1, BACKGROUND_MAX_WIDTH / image.width);
+  const targetWidth = Math.round(image.width * scale);
+  const targetHeight = Math.round(image.height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return originalDataUri;
+  }
+
+  context.drawImage(image, 0, 0, targetWidth, targetHeight);
+  return canvas.toDataURL("image/jpeg", BACKGROUND_JPEG_QUALITY);
+}
+
 function readFileAsDataUri(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
