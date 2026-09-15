@@ -615,13 +615,7 @@ button {
 .qq-carousel-slide img {
   width: 100%;
   height: 100%;
-  /* "contain" (no "cover"): la imagen entera SIEMPRE se ve completa, sin
-     cortar nada -- pedido explicito (15/09/2026): "hice una y no entro
-     todo, quedo partes afuera". Si la imagen no llena el ancho o el
-     alto exacto de la banda, quedan franjas del fondo del carrusel a
-     los costados o arriba/abajo, pero nunca se pierde contenido. */
-  object-fit: contain;
-  background: var(--color-bg-elevated);
+  object-fit: cover;
   display: block;
 }
 
