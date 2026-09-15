@@ -207,6 +207,15 @@ export function QqHomePage() {
         />
       ) : (
         <>
+          {/* Justo debajo del header, ANTES del buscador -- pedido
+              explicito (15/09/2026): "el carrusel debe ir abajo de la
+              cabecera, no abajo del buscador". */}
+          {!isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
+            <div className="qq-carousel-wrap">
+              <Carousel images={carouselImages} />
+            </div>
+          ) : null}
+
           <div className="qq-search-wrap">
             <div className="qq-hero-heading">
               <h1 className="qq-hero-title">¿Qué quieres ver hoy?</h1>
@@ -238,12 +247,6 @@ export function QqHomePage() {
               </button>
             </form>
           </div>
-
-          {!isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
-            <div className="qq-carousel-wrap">
-              <Carousel images={carouselImages} />
-            </div>
-          ) : null}
 
           <main className="qq-main">
             {error ? <p className="qq-error qq-error--center">{error}</p> : null}
