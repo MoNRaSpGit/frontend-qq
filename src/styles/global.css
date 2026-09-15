@@ -516,6 +516,36 @@ button {
   }
 }
 
+/* Cuenta corriente (15/09/2026) -- semaforo segun cuanto falte para la
+   fecha de vencimiento (ver qq.clientStatus.ts): blanco (mas de 1 mes),
+   amarillo (en el mes de vencer) y rojo (5 dias o menos / vencido). */
+.qq-client-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-border);
+  background: rgba(26, 26, 29, 0.7);
+}
+
+.qq-client-row--soon {
+  border-left-color: #e6b325;
+  background: rgba(230, 179, 37, 0.08);
+}
+
+.qq-client-row--urgent {
+  border-left-color: var(--color-danger);
+  background: rgba(224, 85, 74, 0.1);
+}
+
+@media (max-width: 560px) {
+  .qq-client-row {
+    flex-wrap: wrap;
+  }
+}
+
 /* Pestaña "Carrusel" del admin (15/09/2026) -- grilla de miniaturas de
    las fotos de fondo, cada una con su boton de borrar. */
 .qq-carousel-grid {

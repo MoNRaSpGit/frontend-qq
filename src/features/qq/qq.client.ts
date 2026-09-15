@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../../shared/config/api";
-import type { QqCarouselImage, QqProduct, QqProductStatus, QqUser } from "./qq.types";
+import type { QqCarouselImage, QqClient, QqProduct, QqProductStatus, QqUser } from "./qq.types";
 
 function buildUrl(path: string) {
   return `${API_BASE_URL}/api/v1${path}`;
@@ -123,6 +123,50 @@ export async function addCarouselImage(token: string, dataUri: string) {
 
 export async function deleteCarouselImage(token: string, imageId: number) {
   const response = await fetch(buildUrl(`/qq/carousel/${imageId}`), {
+    method: "DELETE",
+    headers: authHeaders(token)
+  });
+  await readJson<{ ok: boolean }>(response);
+}
+
+// Cuenta corriente (15/09/2026) -- SOLO el admin ve/toca esto, requiere
+// token en las 4 operaciones (ni siquiera listar es publico, a
+// diferencia de productos/carrusel).
+export async function listClients(token: string) {
+  const response = await fetch(buildUrl("/qq/clients"), { headers: authHeaders(token) });
+  const data = await readJson<{ items: QqClient[] }>(response);
+  return data.items;
+}
+
+export async function createClient(
+  token: string,
+  payload: { name: string; dueDate: string; email?: string; phone?: string }
+) {
+  const response = await fetch(buildUrl("/qq/clients"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload)
+  });
+  const data = await readJson<{ item: QqClient }>(response);
+  return data.item;
+}
+
+export async function updateClient(
+  token: string,
+  clientId: number,
+  payload: Partial<{ name: string; dueDate: string; email: string; phone: string }>
+) {
+  const response = await fetch(buildUrl(`/qq/clients/${clientId}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload)
+  });
+  const data = await readJson<{ item: QqClient }>(response);
+  return data.item;
+}
+
+export async function deleteClient(token: string, clientId: number) {
+  const response = await fetch(buildUrl(`/qq/clients/${clientId}`), {
     method: "DELETE",
     headers: authHeaders(token)
   });

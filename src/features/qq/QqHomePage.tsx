@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteProduct, listCarouselImages, listProducts, logoutUser } from "./qq.client";
+import { deleteClient, deleteProduct, listCarouselImages, listClients, listProducts, logoutUser } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AdminCarouselPage } from "./components/AdminCarouselPage";
+import { AdminClientsPage } from "./components/AdminClientsPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
 import { Carousel } from "./components/Carousel";
 import { CartDrawer } from "./components/CartDrawer";
+import { ClientFormModal } from "./components/ClientFormModal";
 import { Header } from "./components/Header";
 import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
@@ -14,7 +16,7 @@ import { ProductFormModal } from "./components/ProductFormModal";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
-import type { QqCarouselImage, QqProduct } from "./qq.types";
+import type { QqCarouselImage, QqClient, QqProduct } from "./qq.types";
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
@@ -29,7 +31,7 @@ export function QqHomePage() {
   // propia del admin para cargar/editar/borrar -- pedido explicito
   // (15/09/2026): "que no ingrese directo en la pantalla principal, que
   // tenga su propia pestaña".
-  const [view, setView] = useState<"catalogo" | "productos" | "carrusel">("catalogo");
+  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes">("catalogo");
   const [query, setQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
@@ -38,10 +40,18 @@ export function QqHomePage() {
   const [carouselImages, setCarouselImages] = useState<QqCarouselImage[]>([]);
   const [isCarouselLoading, setIsCarouselLoading] = useState(true);
   const [carouselError, setCarouselError] = useState<string | null>(null);
+  // Cuenta corriente (15/09/2026) -- SOLO se pide al backend cuando hay
+  // sesion de admin (ver useEffect mas abajo), a diferencia de
+  // productos/carrusel que son publicos y se piden siempre.
+  const [clients, setClients] = useState<QqClient[]>([]);
+  const [isClientsLoading, setIsClientsLoading] = useState(true);
+  const [clientsError, setClientsError] = useState<string | null>(null);
   // "new" = alta; un QqProduct = edicion de ese producto; null = cerrado.
   // Un solo estado para las dos cosas -- mismo modal (ver
   // ProductFormModal), pedido 15/09/2026.
   const [productFormTarget, setProductFormTarget] = useState<QqProduct | "new" | null>(null);
+  // Mismo criterio para clientes (ver ClientFormModal).
+  const [clientFormTarget, setClientFormTarget] = useState<QqClient | "new" | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<QqProduct | null>(null);
   const [cartItems, setCartItems] = useState<QqCartItem[]>(() => loadCart());
@@ -111,6 +121,27 @@ export function QqHomePage() {
     void refreshCarousel();
   }, []);
 
+  // Cuenta corriente: se pide recien cuando hay sesion de admin (el
+  // endpoint exige token, a diferencia de productos/carrusel que son
+  // publicos) -- si se desloguea, se limpia para no dejar datos de
+  // clientes colgados en memoria.
+  useEffect(() => {
+    if (!isAdmin || !session) {
+      setClients([]);
+      return;
+    }
+    setIsClientsLoading(true);
+    listClients(session.token)
+      .then((items) => {
+        setClients(items);
+        setClientsError(null);
+      })
+      .catch((fetchError) => {
+        setClientsError(fetchError instanceof Error ? fetchError.message : "No se pudo cargar la cuenta corriente.");
+      })
+      .finally(() => setIsClientsLoading(false));
+  }, [isAdmin, session]);
+
   function handleInicio() {
     setView("catalogo");
     setQuery("");
@@ -150,6 +181,21 @@ export function QqHomePage() {
     }
   }
 
+  function handleEditarCliente(client: QqClient) {
+    setClientFormTarget(client);
+  }
+
+  async function handleEliminarCliente(client: QqClient) {
+    if (!session) return;
+    try {
+      await deleteClient(session.token, client.id);
+      setClients((current) => current.filter((item) => item.id !== client.id));
+      toast.success(`"${client.name}" se eliminó.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo eliminar el cliente.");
+    }
+  }
+
   return (
     <div className="qq-shell">
       {/* Foto de fondo de TODA la pagina (no solo del hero) -- fija a la
@@ -180,6 +226,7 @@ export function QqHomePage() {
           onInicio={handleInicio}
           onProductos={() => setView("productos")}
           onCarrusel={() => setView("carrusel")}
+          onClientes={() => setView("clientes")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
@@ -216,6 +263,15 @@ export function QqHomePage() {
           error={carouselError}
           onAgregada={(image) => setCarouselImages((current) => [...current, image])}
           onEliminada={(imageId) => setCarouselImages((current) => current.filter((item) => item.id !== imageId))}
+        />
+      ) : view === "clientes" && isAdmin && session ? (
+        <AdminClientsPage
+          clients={clients}
+          isLoading={isClientsLoading}
+          error={clientsError}
+          onNuevo={() => setClientFormTarget("new")}
+          onEditar={handleEditarCliente}
+          onEliminar={(client) => void handleEliminarCliente(client)}
         />
       ) : (
         <>
@@ -314,6 +370,22 @@ export function QqHomePage() {
               wasEditing ? current.map((item) => (item.id === product.id ? product : item)) : [product, ...current]
             );
             toast.success(wasEditing ? `"${product.name}" se actualizó.` : `"${product.name}" se agregó correctamente.`);
+          }}
+        />
+      ) : null}
+
+      {clientFormTarget && session ? (
+        <ClientFormModal
+          token={session.token}
+          client={clientFormTarget === "new" ? undefined : clientFormTarget}
+          onCancelar={() => setClientFormTarget(null)}
+          onGuardado={(client) => {
+            const wasEditing = clientFormTarget !== "new";
+            setClientFormTarget(null);
+            setClients((current) =>
+              wasEditing ? current.map((item) => (item.id === client.id ? client : item)) : [client, ...current]
+            );
+            toast.success(wasEditing ? `"${client.name}" se actualizó.` : `"${client.name}" se agregó correctamente.`);
           }}
         />
       ) : null}
