@@ -577,7 +577,7 @@ button {
    sigue siendo siempre la original). Las fotos las carga el admin desde
    su pestaña "Carrusel" (ver AdminCarouselPage.tsx). */
 .qq-carousel-wrap {
-  padding: 20px 0 0;
+  padding: 0;
   width: 100%;
 }
 
@@ -671,10 +671,6 @@ button {
 }
 
 @media (max-width: 640px) {
-  .qq-carousel-wrap {
-    padding: 14px 0 0;
-  }
-
   .qq-carousel-viewport {
     height: 130px;
   }
