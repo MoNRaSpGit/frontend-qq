@@ -577,10 +577,8 @@ button {
    sigue siendo siempre la original). Las fotos las carga el admin desde
    su pestaña "Carrusel" (ver AdminCarouselPage.tsx). */
 .qq-carousel-wrap {
-  padding: 20px 28px 0;
-  max-width: 860px;
+  padding: 20px 0 0;
   width: 100%;
-  margin: 0 auto;
 }
 
 .qq-carousel {
@@ -591,10 +589,15 @@ button {
 
 .qq-carousel-viewport {
   position: relative;
-  aspect-ratio: 32 / 9;
-  border-radius: var(--radius);
+  /* Alto FIJO (no aspect-ratio) -- pedido explicito (15/09/2026): "de
+     extremo a extremo... pero finito". Al ocupar el 100% del ancho de
+     la pagina (no solo del contenido central), un aspect-ratio haria
+     que la banda creciera de alto en pantallas anchas -- con un alto
+     fijo se mantiene finita sin importar el ancho de la ventana. */
+  height: 220px;
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-elevated);
 }
 
@@ -669,11 +672,11 @@ button {
 
 @media (max-width: 640px) {
   .qq-carousel-wrap {
-    padding: 14px 16px 0;
+    padding: 14px 0 0;
   }
 
   .qq-carousel-viewport {
-    aspect-ratio: 16 / 7;
+    height: 130px;
   }
 }
 
