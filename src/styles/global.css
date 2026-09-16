@@ -1139,6 +1139,52 @@ button {
   color: var(--color-text-muted);
 }
 
+/* Selector de perfil/cuenta -- pedido explicito (16/09/2026): "que el
+   cliente seleccione el que quiera... que no pueda agregar al carrito
+   si no selecciona el que quiere". */
+.qq-detail-variant-picker {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.qq-detail-variant-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(26, 26, 29, 0.6);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.qq-detail-variant-option:hover {
+  border-color: var(--color-accent-dark);
+}
+
+.qq-detail-variant-option.is-selected {
+  border-color: var(--color-accent);
+  background: rgba(230, 179, 37, 0.12);
+}
+
+.qq-detail-variant-amount {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.qq-detail-variant-hint {
+  padding: 0;
+  text-align: left;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
 .qq-detail-actions {
   display: flex;
   align-items: center;
@@ -1261,6 +1307,11 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.qq-cart-row-variant {
+  font-weight: 500;
+  color: var(--color-text-muted);
 }
 
 .qq-cart-row-price {

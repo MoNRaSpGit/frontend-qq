@@ -15,6 +15,7 @@ import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
+import { QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqCarouselImage, QqClient, QqProduct } from "./qq.types";
 
@@ -158,10 +159,10 @@ export function QqHomePage() {
     toast.success("Saliste de tu cuenta.");
   }
 
-  function handleAgregarAlCarrito(product: QqProduct, quantity: number) {
-    setCartItems((current) => addToCart(current, product, quantity));
+  function handleAgregarAlCarrito(product: QqProduct, variant: QqPriceVariant, quantity: number) {
+    setCartItems((current) => addToCart(current, product, variant, quantity));
     setSelectedProduct(null);
-    toast.success(`"${product.name}" se agregó al carrito.`);
+    toast.success(`"${product.name}" (${QQ_PRICE_VARIANT_LABELS[variant]}) se agregó al carrito.`);
   }
 
   function handleEditar(product: QqProduct) {
@@ -349,8 +350,10 @@ export function QqHomePage() {
         <CartDrawer
           items={cartItems}
           onCerrar={() => setShowCart(false)}
-          onCambiarCantidad={(productId, quantity) => setCartItems((current) => updateCartQuantity(current, productId, quantity))}
-          onQuitar={(productId) => setCartItems((current) => removeFromCart(current, productId))}
+          onCambiarCantidad={(productId, variant, quantity) =>
+            setCartItems((current) => updateCartQuantity(current, productId, variant, quantity))
+          }
+          onQuitar={(productId, variant) => setCartItems((current) => removeFromCart(current, productId, variant))}
           onVaciar={() => {
             setCartItems(clearCart());
             toast.success("Carrito vaciado.");

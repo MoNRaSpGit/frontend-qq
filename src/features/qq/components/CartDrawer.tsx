@@ -1,12 +1,12 @@
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
-import { getBasePrice } from "../qq.pricing";
+import { getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 
 type CartDrawerProps = {
   items: QqCartItem[];
   onCerrar: () => void;
-  onCambiarCantidad: (productId: number, quantity: number) => void;
-  onQuitar: (productId: number) => void;
+  onCambiarCantidad: (productId: number, variant: QqPriceVariant, quantity: number) => void;
+  onQuitar: (productId: number, variant: QqPriceVariant) => void;
   onVaciar: () => void;
 };
 
@@ -29,21 +29,36 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
           <>
             <div className="qq-cart-list">
               {items.map((item) => (
-                <div className="qq-cart-row" key={item.product.id}>
+                <div className="qq-cart-row" key={`${item.product.id}-${item.variant}`}>
                   <div className="qq-cart-row-info">
-                    <span className="qq-cart-row-name">{item.product.name}</span>
-                    <span className="qq-cart-row-price">${getBasePrice(item.product).toFixed(0)} /mes c/u</span>
+                    <span className="qq-cart-row-name">
+                      {item.product.name} <span className="qq-cart-row-variant">({QQ_PRICE_VARIANT_LABELS[item.variant]})</span>
+                    </span>
+                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)} /mes c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
-                    <button type="button" onClick={() => onCambiarCantidad(item.product.id, item.quantity - 1)} aria-label="Restar">
+                    <button
+                      type="button"
+                      onClick={() => onCambiarCantidad(item.product.id, item.variant, item.quantity - 1)}
+                      aria-label="Restar"
+                    >
                       −
                     </button>
                     <span>{item.quantity}</span>
-                    <button type="button" onClick={() => onCambiarCantidad(item.product.id, item.quantity + 1)} aria-label="Sumar">
+                    <button
+                      type="button"
+                      onClick={() => onCambiarCantidad(item.product.id, item.variant, item.quantity + 1)}
+                      aria-label="Sumar"
+                    >
                       +
                     </button>
                   </div>
-                  <button type="button" className="qq-cart-row-remove" onClick={() => onQuitar(item.product.id)} aria-label="Quitar">
+                  <button
+                    type="button"
+                    className="qq-cart-row-remove"
+                    onClick={() => onQuitar(item.product.id, item.variant)}
+                    aria-label="Quitar"
+                  >
                     Quitar
                   </button>
                 </div>

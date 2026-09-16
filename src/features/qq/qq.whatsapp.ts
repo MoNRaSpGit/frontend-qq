@@ -1,5 +1,5 @@
 import type { QqCartItem } from "./qq.cart";
-import { getBasePrice } from "./qq.pricing";
+import { getVariantPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
 
 // Numero real del cliente (15/09/2026: se corrige a 098 856 076, el
 // original -- antes tenia cargado el numero personal del admin por
@@ -26,7 +26,8 @@ export function buildWhatsAppHref(message: string): string {
 export function buildCartWhatsAppMessage(items: QqCartItem[]): string {
   const lines = items.map((item) => {
     const subtitle = item.quantity > 1 ? ` x${item.quantity}` : "";
-    return `- ${item.product.name}${subtitle} ($${getBasePrice(item.product).toFixed(0)}/mes)`;
+    const variantLabel = QQ_PRICE_VARIANT_LABELS[item.variant];
+    return `- ${item.product.name} (${variantLabel})${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)}/mes)`;
   });
 
   return ["Hola! Me gustaría comprar estos productos:", "", ...lines].join("\n");
