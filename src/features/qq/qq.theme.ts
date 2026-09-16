@@ -17,7 +17,8 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
   videojuegos: { gradient: "linear-gradient(160deg, #5b21b6, #1c0a35)", textColor: "#ffffff" },
   "pagina-web": { gradient: "linear-gradient(160deg, #0a5f77, #052733)", textColor: "#ffffff" },
   anime: { gradient: "linear-gradient(160deg, #d4590f, #401a04)", textColor: "#ffffff" },
-  herramientas: { gradient: "linear-gradient(160deg, #2b2b2e, #050505)", textColor: "#ffffff" }
+  herramientas: { gradient: "linear-gradient(160deg, #2b2b2e, #050505)", textColor: "#ffffff" },
+  tv: { gradient: "linear-gradient(160deg, #0c3faa, #051538)", textColor: "#ffffff" }
 };
 
 // Paleta de respaldo para categorias sin tema propio -- se elige siempre

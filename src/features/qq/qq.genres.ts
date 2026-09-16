@@ -3,7 +3,7 @@
 // agrupaba varias categorias especificas (netflix, spotify, etc.); ahora
 // la categoria QUE ELIGE EL ADMIN (ver qq.categories.ts) ya es
 // directamente el genero -- no hace falta ningun mapeo intermedio.
-export type QqGenreKey = "musica" | "cine" | "videojuegos" | "pagina-web" | "anime" | "herramientas";
+export type QqGenreKey = "musica" | "cine" | "videojuegos" | "pagina-web" | "anime" | "herramientas" | "tv";
 
 export const QQ_GENRES: Array<{ key: QqGenreKey; label: string }> = [
   { key: "musica", label: "Música" },
@@ -11,7 +11,8 @@ export const QQ_GENRES: Array<{ key: QqGenreKey; label: string }> = [
   { key: "videojuegos", label: "Video juegos" },
   { key: "pagina-web", label: "Página web" },
   { key: "anime", label: "Anime" },
-  { key: "herramientas", label: "Herramientas" }
+  { key: "herramientas", label: "Herramientas" },
+  { key: "tv", label: "TV" }
 ];
 
 const VALID_GENRES = new Set<string>(QQ_GENRES.map((genre) => genre.key));

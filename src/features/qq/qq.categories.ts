@@ -16,7 +16,8 @@ export const QQ_CATEGORY_OPTIONS: QqCategoryOption[] = [
   { value: "videojuegos", label: "Video juegos", genre: "videojuegos" },
   { value: "pagina-web", label: "Página web", genre: "pagina-web" },
   { value: "anime", label: "Anime", genre: "anime" },
-  { value: "herramientas", label: "Herramientas", genre: "herramientas" }
+  { value: "herramientas", label: "Herramientas", genre: "herramientas" },
+  { value: "tv", label: "TV", genre: "tv" }
 ];
 
 export const QQ_GENRE_LABELS: Record<QqGenreKey, string> = {
@@ -25,5 +26,6 @@ export const QQ_GENRE_LABELS: Record<QqGenreKey, string> = {
   videojuegos: "Video juegos",
   "pagina-web": "Página web",
   anime: "Anime",
-  herramientas: "Herramientas"
+  herramientas: "Herramientas",
+  tv: "TV"
 };
