@@ -25,11 +25,15 @@ export type QqClient = {
   createdAt: string;
 };
 
+// Dos precios independientes (16/09/2026): "hay tarjetas que llevan los
+// dos, otras que no". Al menos uno de los dos siempre esta cargado (se
+// valida en el backend), pero nunca los dos a la vez son obligatorios.
 export type QqProduct = {
   id: number;
   name: string;
   description: string | null;
-  price: number;
+  accountPrice: number | null;
+  profilePrice: number | null;
   currency: string;
   imageUrl: string | null;
   hasImage: boolean;

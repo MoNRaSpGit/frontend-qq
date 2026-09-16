@@ -1,3 +1,4 @@
+import { getBasePrice } from "./qq.pricing";
 import type { QqProduct } from "./qq.types";
 
 // Carrito guardado en localStorage, por navegador -- sin backend todavia
@@ -67,7 +68,7 @@ export function getCartTotalsByCurrency(items: QqCartItem[]): Array<{ currency: 
   const totals = new Map<string, number>();
   for (const item of items) {
     const current = totals.get(item.product.currency) ?? 0;
-    totals.set(item.product.currency, current + item.product.price * item.quantity);
+    totals.set(item.product.currency, current + getBasePrice(item.product) * item.quantity);
   }
   return Array.from(totals.entries()).map(([currency, total]) => ({ currency, total }));
 }

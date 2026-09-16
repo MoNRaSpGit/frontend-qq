@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getProductImageSrc } from "../qq.client";
+import { getPriceLines } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
@@ -44,8 +45,18 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
           {product.category ? <span className="qq-card-category">{product.category}</span> : null}
           {product.description ? <p className="qq-detail-description">{product.description}</p> : null}
 
-          <div className="qq-detail-price">
-            ${product.price.toFixed(0)} <span className="qq-detail-price-suffix">/mes</span>
+          {/* Uno, otro o los dos -- pedido explicito (16/09/2026): "si no
+              le pongo el precio de perfil, no sale... si pongo los dos,
+              salen los dos". */}
+          <div className="qq-detail-prices">
+            {getPriceLines(product).map((line) => (
+              <div className="qq-detail-price" key={line.label}>
+                <span className="qq-detail-price-label">{line.label}</span>
+                <span>
+                  ${line.amount.toFixed(0)} <span className="qq-detail-price-suffix">/mes</span>
+                </span>
+              </div>
+            ))}
           </div>
 
           {confirmandoEliminar ? (

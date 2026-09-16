@@ -19,7 +19,8 @@ type ProductFormModalProps = {
 export function ProductFormModal({ token, product, onCancelar, onGuardado }: ProductFormModalProps) {
   const isEditing = Boolean(product);
   const [name, setName] = useState(product?.name ?? "");
-  const [price, setPrice] = useState(product ? String(product.price) : "");
+  const [accountPrice, setAccountPrice] = useState(product?.accountPrice !== null && product?.accountPrice !== undefined ? String(product.accountPrice) : "");
+  const [profilePrice, setProfilePrice] = useState(product?.profilePrice !== null && product?.profilePrice !== undefined ? String(product.profilePrice) : "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(product ? getProductImageSrc(product) : null);
@@ -43,14 +44,29 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    const precioNum = Number(price);
+
+    const trimmedAccountPrice = accountPrice.trim();
+    const trimmedProfilePrice = profilePrice.trim();
+    const accountPriceNum = trimmedAccountPrice ? Number(trimmedAccountPrice) : null;
+    const profilePriceNum = trimmedProfilePrice ? Number(trimmedProfilePrice) : null;
 
     if (!name.trim()) {
       setError("Ingresá el nombre del producto.");
       return;
     }
-    if (!Number.isFinite(precioNum) || precioNum < 0) {
-      setError("Ingresá un precio válido.");
+    if (accountPriceNum !== null && (!Number.isFinite(accountPriceNum) || accountPriceNum < 0)) {
+      setError("Ingresá un precio de cuenta válido.");
+      return;
+    }
+    if (profilePriceNum !== null && (!Number.isFinite(profilePriceNum) || profilePriceNum < 0)) {
+      setError("Ingresá un precio de perfil válido.");
+      return;
+    }
+    // "Si pone los dos, salen los dos... hay tarjetas que si llevan y
+    // otras que no" -- pero al menos UNO de los dos tiene que estar
+    // (pedido explicito, 16/09/2026).
+    if (accountPriceNum === null && profilePriceNum === null) {
+      setError("Ingresá al menos un precio (de cuenta o de perfil).");
       return;
     }
     if (!category) {
@@ -61,16 +77,24 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
     setError("");
     setGuardando(true);
     try {
-      const payload = {
+      const common = {
         name: name.trim(),
-        price: precioNum,
         currency: "UYU",
         category,
         description: description.trim() || undefined
       };
 
+      // En alta, un precio vacio se omite (undefined); en edicion, un
+      // precio vaciado a proposito se manda como null explicito para
+      // borrarlo de verdad (ver UpdateQqProductDto en el backend).
       const savedProduct =
-        isEditing && product ? await updateProduct(token, product.id, payload) : await createProduct(token, payload);
+        isEditing && product
+          ? await updateProduct(token, product.id, { ...common, accountPrice: accountPriceNum, profilePrice: profilePriceNum })
+          : await createProduct(token, {
+              ...common,
+              accountPrice: accountPriceNum ?? undefined,
+              profilePrice: profilePriceNum ?? undefined
+            });
 
       const finalProduct = pendingImageDataUri
         ? await uploadProductImage(token, savedProduct.id, pendingImageDataUri)
@@ -128,15 +152,30 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
             </select>
           </label>
 
+          {/* Dos precios independientes -- pedido explicito (16/09/2026):
+              "hay tarjetas que si llevan los dos, otras que no". Se
+              puede dejar uno vacio, pero no los dos. */}
           <label className="qq-field">
-            <span>Precio mensual ($)</span>
+            <span>Precio de cuenta mensual ($, opcional)</span>
             <input
               type="number"
               step="1"
               min="0"
               inputMode="decimal"
-              value={price}
-              onChange={(event) => setPrice(event.target.value)}
+              value={accountPrice}
+              onChange={(event) => setAccountPrice(event.target.value)}
+            />
+          </label>
+
+          <label className="qq-field">
+            <span>Precio de perfil mensual ($, opcional)</span>
+            <input
+              type="number"
+              step="1"
+              min="0"
+              inputMode="decimal"
+              value={profilePrice}
+              onChange={(event) => setProfilePrice(event.target.value)}
             />
           </label>
 

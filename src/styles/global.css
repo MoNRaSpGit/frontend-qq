@@ -1107,11 +1107,30 @@ button {
   margin: 10px 0 0;
 }
 
+/* Uno, otro o los dos precios -- pedido explicito (16/09/2026): "si no
+   le pongo el precio de perfil, no sale... si pongo los dos, salen los
+   dos". */
+.qq-detail-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 14px;
+}
+
 .qq-detail-price {
-  font-size: 24px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--color-accent);
-  margin-top: 14px;
+}
+
+.qq-detail-price-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
 .qq-detail-price-suffix {

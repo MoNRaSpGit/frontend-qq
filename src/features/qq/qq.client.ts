@@ -42,7 +42,8 @@ export async function createProduct(
   payload: {
     name: string;
     description?: string;
-    price: number;
+    accountPrice?: number;
+    profilePrice?: number;
     currency?: string;
     imageUrl?: string;
     category?: string;
@@ -64,7 +65,8 @@ export async function updateProduct(
   payload: Partial<{
     name: string;
     description: string;
-    price: number;
+    accountPrice: number | null;
+    profilePrice: number | null;
     currency: string;
     imageUrl: string;
     category: string;

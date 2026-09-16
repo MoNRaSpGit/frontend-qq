@@ -1,4 +1,5 @@
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
+import { getBasePrice } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 
 type CartDrawerProps = {
@@ -31,7 +32,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                 <div className="qq-cart-row" key={item.product.id}>
                   <div className="qq-cart-row-info">
                     <span className="qq-cart-row-name">{item.product.name}</span>
-                    <span className="qq-cart-row-price">${item.product.price.toFixed(0)} /mes c/u</span>
+                    <span className="qq-cart-row-price">${getBasePrice(item.product).toFixed(0)} /mes c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
                     <button type="button" onClick={() => onCambiarCantidad(item.product.id, item.quantity - 1)} aria-label="Restar">

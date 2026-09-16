@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getProductImageSrc } from "../qq.client";
+import { getPriceLines } from "../qq.pricing";
 import type { QqProduct } from "../qq.types";
 
 type AdminProductsPageProps = {
@@ -45,7 +46,10 @@ export function AdminProductsPage({ products, isLoading, error, onNuevo, onEdita
               <div className="qq-admin-row-info">
                 <span className="qq-admin-row-name">{product.name}</span>
                 <span className="qq-admin-row-meta">
-                  {product.category || "Sin categoría"} · ${product.price.toFixed(0)} /mes
+                  {product.category || "Sin categoría"} ·{" "}
+                  {getPriceLines(product)
+                    .map((line) => `${line.label} $${line.amount.toFixed(0)}/mes`)
+                    .join(" · ")}
                 </span>
               </div>
 
