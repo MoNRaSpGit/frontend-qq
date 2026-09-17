@@ -455,6 +455,25 @@ button {
   background: rgba(30, 30, 34, 0.9);
 }
 
+/* Orden manual del catalogo (16/09/2026). */
+.qq-admin-position-input {
+  flex-shrink: 0;
+  width: 44px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-accent);
+  font-weight: 800;
+  text-align: center;
+  font-size: 14px;
+}
+
+.qq-admin-position-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
 .qq-admin-row-media {
   flex-shrink: 0;
   width: 56px;

@@ -90,6 +90,18 @@ export async function deleteProduct(token: string, productId: number) {
   await readJson<{ ok: boolean }>(response);
 }
 
+// Orden manual del catalogo (16/09/2026) -- mover a un puesto swapea con
+// el producto que ya estaba ahi (se resuelve en el backend).
+export async function reorderProduct(token: string, productId: number, position: number) {
+  const response = await fetch(buildUrl(`/qq/products/${productId}/position`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ position })
+  });
+  const data = await readJson<{ item: QqProduct }>(response);
+  return data.item;
+}
+
 export async function uploadProductImage(token: string, productId: number, dataUri: string) {
   const response = await fetch(buildUrl(`/qq/products/${productId}/image`), {
     method: "POST",

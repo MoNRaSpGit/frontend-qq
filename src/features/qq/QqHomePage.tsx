@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteClient, deleteProduct, listCarouselImages, listClients, listProducts, logoutUser } from "./qq.client";
+import { deleteClient, deleteProduct, listCarouselImages, listClients, listProducts, logoutUser, reorderProduct } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AdminCarouselPage } from "./components/AdminCarouselPage";
 import { AdminClientsPage } from "./components/AdminClientsPage";
@@ -182,6 +182,20 @@ export function QqHomePage() {
     }
   }
 
+  // Orden manual (16/09/2026): el swap en el backend cambia la posicion
+  // de DOS productos a la vez (el movido y el que ya estaba en ese
+  // puesto) -- se vuelve a pedir la lista entera en vez de parchear a
+  // mano, para no arriesgarse a que el otro quede con un numero viejo.
+  async function handleReordenarProducto(product: QqProduct, position: number) {
+    if (!session) return;
+    try {
+      await reorderProduct(session.token, product.id, position);
+      await refresh(query);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo reordenar el producto.");
+    }
+  }
+
   function handleEditarCliente(client: QqClient) {
     setClientFormTarget(client);
   }
@@ -255,6 +269,7 @@ export function QqHomePage() {
           onNuevo={() => setProductFormTarget("new")}
           onEditar={handleEditar}
           onEliminar={(product) => void handleEliminar(product)}
+          onReordenar={(product, position) => void handleReordenarProducto(product, position)}
         />
       ) : view === "carrusel" && isAdmin && session ? (
         <AdminCarouselPage
@@ -369,8 +384,12 @@ export function QqHomePage() {
           onGuardado={(product) => {
             const wasEditing = productFormTarget !== "new";
             setProductFormTarget(null);
+            // Un producto nuevo entra siempre al final (mayor numero de
+            // posicion, ver qq-products.service.ts#createProduct) -- se
+            // agrega al final del array tambien, para no mostrarlo
+            // primero en el catalogo cuando en realidad quedo ultimo.
             setProducts((current) =>
-              wasEditing ? current.map((item) => (item.id === product.id ? product : item)) : [product, ...current]
+              wasEditing ? current.map((item) => (item.id === product.id ? product : item)) : [...current, product]
             );
             toast.success(wasEditing ? `"${product.name}" se actualizó.` : `"${product.name}" se agregó correctamente.`);
           }}

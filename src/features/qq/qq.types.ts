@@ -39,5 +39,9 @@ export type QqProduct = {
   hasImage: boolean;
   category: string | null;
   status: QqProductStatus;
+  // Orden manual en el catalogo (16/09/2026) -- "si la cambio al puesto
+  // 1, la 1 pasa al puesto de la que cambie". El publico ve las
+  // tarjetas ordenadas por esto.
+  position: number;
   createdAt: string;
 };
