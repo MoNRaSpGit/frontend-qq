@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { getProductImageSrc } from "../qq.client";
 import { getAvailableVariants, getPriceLines, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
@@ -126,9 +127,14 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
                 </div>
                 <button
                   type="button"
-                  className="qq-button qq-button--primary qq-detail-add"
-                  disabled={!selectedVariant}
-                  onClick={() => selectedVariant && onAgregarAlCarrito(product, selectedVariant, quantity)}
+                  className={selectedVariant ? "qq-button qq-button--primary qq-detail-add" : "qq-button qq-button--primary qq-detail-add is-blocked"}
+                  onClick={() => {
+                    if (!selectedVariant) {
+                      toast.error("Debés seleccionar un precio (perfil o cuenta) antes de agregarlo.");
+                      return;
+                    }
+                    onAgregarAlCarrito(product, selectedVariant, quantity);
+                  }}
                 >
                   Agregar al carrito
                 </button>

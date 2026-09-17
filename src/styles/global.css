@@ -917,6 +917,17 @@ button {
   cursor: default;
 }
 
+/* Igual que :disabled pero sin el atributo disabled -- el boton de
+   "Agregar al carrito" cuando falta elegir perfil/cuenta necesita seguir
+   recibiendo el click (un <button disabled> no dispara onClick) para
+   poder mostrar el aviso en vez de agregar nada. Pedido explicito
+   (17/09/2026): "pone un mensaje cuando el cliente le hace click a
+   agregar al carrito y no agrega". */
+.qq-button.is-blocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Modal de alta de producto */
 .qq-modal-overlay {
   position: fixed;
