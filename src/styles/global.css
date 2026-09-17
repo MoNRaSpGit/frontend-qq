@@ -1175,7 +1175,11 @@ button {
   gap: 4px;
   padding: 10px 12px;
   border-radius: var(--radius);
-  border: 1px solid var(--color-border);
+  /* Punteado y en el color de acento mientras no esta elegida -- antes
+     era un borde gris solido, igual que cualquier caja no interactiva,
+     asi que no se notaba que hacia falta tocarla (pedido explicito
+     17/09/2026: "el boton me sale opaco... es raro"). */
+  border: 1px dashed var(--color-accent-dark);
   background: rgba(26, 26, 29, 0.6);
   color: var(--color-text);
   cursor: pointer;
@@ -1183,10 +1187,12 @@ button {
 }
 
 .qq-detail-variant-option:hover {
+  border-style: solid;
   border-color: var(--color-accent-dark);
 }
 
 .qq-detail-variant-option.is-selected {
+  border-style: solid;
   border-color: var(--color-accent);
   background: rgba(230, 179, 37, 0.12);
 }
@@ -1201,7 +1207,7 @@ button {
   padding: 0;
   text-align: left;
   font-size: 13px;
-  margin-top: 6px;
+  margin: 10px 0 0;
 }
 
 .qq-detail-actions {

@@ -58,22 +58,32 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
 
           {needsVariantChoice ? (
             // Los dos precios cargados -- hay que elegir uno para poder
-            // agregar al carrito (pedido explicito, 16/09/2026).
-            <div className="qq-detail-variant-picker" role="radiogroup" aria-label="Elegí perfil o cuenta">
-              {availableVariants.map((variant) => (
-                <button
-                  key={variant}
-                  type="button"
-                  role="radio"
-                  aria-checked={selectedVariant === variant}
-                  className={selectedVariant === variant ? "qq-detail-variant-option is-selected" : "qq-detail-variant-option"}
-                  onClick={() => setSelectedVariant(variant)}
-                >
-                  <span className="qq-detail-price-label">{QQ_PRICE_VARIANT_LABELS[variant]}</span>
-                  <span className="qq-detail-variant-amount">${getVariantPrice(product, variant).toFixed(0)} /mes</span>
-                </button>
-              ))}
-            </div>
+            // agregar al carrito (pedido explicito, 16/09/2026). Pedido
+            // explicito (17/09/2026): "el boton me sale opaco... algunos
+            // productos si y otros no, es raro" -- el boton deshabilitado
+            // no explicaba nada por su cuenta si el cliente no llegaba a
+            // leer el cartel de abajo. Ahora el cartel esta ARRIBA de las
+            // opciones (lo primero que se ve) y las opciones sin elegir
+            // tienen un borde punteado para que se noten clickeables, no
+            // como un simple texto decorativo.
+            <>
+              {!selectedVariant ? <p className="qq-hint qq-detail-variant-hint">Elegí perfil o cuenta para poder agregarlo.</p> : null}
+              <div className="qq-detail-variant-picker" role="radiogroup" aria-label="Elegí perfil o cuenta">
+                {availableVariants.map((variant) => (
+                  <button
+                    key={variant}
+                    type="button"
+                    role="radio"
+                    aria-checked={selectedVariant === variant}
+                    className={selectedVariant === variant ? "qq-detail-variant-option is-selected" : "qq-detail-variant-option"}
+                    onClick={() => setSelectedVariant(variant)}
+                  >
+                    <span className="qq-detail-price-label">{QQ_PRICE_VARIANT_LABELS[variant]}</span>
+                    <span className="qq-detail-variant-amount">${getVariantPrice(product, variant).toFixed(0)} /mes</span>
+                  </button>
+                ))}
+              </div>
+            </>
           ) : (
             // Uno solo cargado -- se muestra directo, sin nada para
             // elegir. Pedido explicito (16/09/2026): "si no le pongo el
@@ -123,10 +133,6 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
                   Agregar al carrito
                 </button>
               </div>
-
-              {needsVariantChoice && !selectedVariant ? (
-                <p className="qq-hint qq-detail-variant-hint">Elegí perfil o cuenta para poder agregarlo.</p>
-              ) : null}
 
               {isAdmin ? (
                 <div className="qq-detail-admin-actions">
