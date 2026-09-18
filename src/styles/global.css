@@ -92,7 +92,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px;
+  /* Mas bajita (12px en vez de 16px) -- pedido explicito (17/09/2026):
+     "bajamos de un lado y le subimos al otro". Lo que se achica aca se
+     suma al alto del carrusel (ver .qq-carousel-viewport), asi el total
+     de la pagina no cambia. */
+  padding: 12px 28px;
   background: rgba(8, 8, 9, 0.45);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -100,7 +104,9 @@ button {
 }
 
 .qq-brand-logo {
-  height: 72px;
+  /* Idem: mas chico (72px a 56px) para bajar el alto de la cabecera --
+     ver comentario en .qq-header. */
+  height: 56px;
   width: auto;
   display: block;
 }
@@ -689,7 +695,11 @@ button {
      imagen entre COMPLETA, sin recorte, y en el resto de los anchos
      recorta bastante menos que antes. Sigue siendo una banda finita, no
      "puro carrusel" (60px mas que antes, nada mas). */
-  height: 280px;
+  /* Pedido explicito (17/09/2026): "bajamos de un lado (cabecera) y le
+     subimos al otro (carrusel)" -- se le suma lo mismo que se le sacó a
+     .qq-header (16px->12px de padding x2, mas 72px->56px de logo = 24px
+     en total), asi el alto combinado de cabecera+carrusel no cambia. */
+  height: 304px;
   overflow: hidden;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -767,7 +777,7 @@ button {
 
 @media (max-width: 640px) {
   .qq-carousel-viewport {
-    height: 160px;
+    height: 168px;
   }
 }
 
@@ -1414,7 +1424,7 @@ button {
 
 @media (max-width: 480px) {
   .qq-header {
-    padding: 16px 18px;
+    padding: 12px 18px;
   }
 
   .qq-main {
