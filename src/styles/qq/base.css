@@ -1,0 +1,67 @@
+:root {
+  --color-bg: #0f0f10;
+  --color-bg-elevated: #1a1a1d;
+  --color-card: #1c1c1f;
+  --color-card-hover: #262629;
+  --color-border: #2c2c30;
+  --color-text: #f2f2f0;
+  --color-text-muted: #9a9a9e;
+  --color-accent: #e6b325;
+  --color-accent-dark: #a97e0f;
+  --color-celeste: #2fb2e8;
+  --color-celeste-dark: #1c86b3;
+  --color-danger: #e0554a;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+.qq-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.qq-main {
+  flex: 1;
+  padding: 0 28px 40px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.qq-hint {
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 40px 0;
+}
+
+.qq-error {
+  color: var(--color-danger);
+}
+
+.qq-error--center {
+  text-align: center;
+  padding: 20px 0;
+}
+
+@media (max-width: 480px) {
+  .qq-main {
+    padding: 0 16px 32px;
+  }
+}

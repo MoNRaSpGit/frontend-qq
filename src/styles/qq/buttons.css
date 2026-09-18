@@ -1,0 +1,54 @@
+/* Botones */
+.qq-button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.qq-button--primary {
+  background: var(--color-accent);
+  color: #141414;
+}
+
+.qq-button--ghost {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.qq-button--danger {
+  background: var(--color-danger);
+  color: #2a0a07;
+}
+
+/* Verde oficial de WhatsApp -- se usa en el boton "Comprar por
+   WhatsApp" del carrito (pedido 15/09/2026), separado del celeste que
+   ya usa el buscador para no confundir los dos significados. */
+.qq-button--whatsapp {
+  background: #25d366;
+  color: #08340f;
+}
+
+.qq-button--whatsapp:hover {
+  background: #1ebe5a;
+}
+
+.qq-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Igual que :disabled pero sin el atributo disabled -- el boton de
+   "Agregar al carrito" cuando falta elegir perfil/cuenta necesita seguir
+   recibiendo el click (un <button disabled> no dispara onClick) para
+   poder mostrar el aviso en vez de agregar nada. Pedido explicito
+   (17/09/2026): "pone un mensaje cuando el cliente le hace click a
+   agregar al carrito y no agrega". */
+.qq-button.is-blocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

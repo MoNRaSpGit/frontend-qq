@@ -1,0 +1,103 @@
+/* Carrito */
+.qq-cart-box {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.qq-cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.qq-cart-header h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.qq-cart-header .qq-detail-close {
+  position: static;
+}
+
+.qq-cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.qq-cart-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.qq-cart-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.qq-cart-row-name {
+  font-weight: 700;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qq-cart-row-variant {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.qq-cart-row-price {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.qq-cart-row-remove {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.qq-cart-totals {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  margin-bottom: 16px;
+}
+
+.qq-cart-total-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  padding: 2px 0;
+}
+
+.qq-cart-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 6px;
+  text-decoration: none;
+  font-size: 15px;
+}
