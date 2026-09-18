@@ -236,7 +236,17 @@ export function QqHomePage() {
           session={session}
           cartCount={getCartCount(cartItems)}
           selectedGenre={selectedGenre}
-          onSelectGenre={setSelectedGenre}
+          onSelectGenre={(genre) => {
+            // Pedido explicito (17/09/2026): "si estoy en Productos y
+            // pongo categoria, no me lleva a categoria, queda trancado
+            // ahi" -- elegir una categoria solo actualizaba el filtro,
+            // nunca cambiaba la vista. Andaba "bien" en Inicio porque ya
+            // estabamos en catalogo (no hacia falta navegar a ningun
+            // lado), pero en Productos/Carrusel/Clientes el filtro
+            // quedaba aplicado sin que se viera nada.
+            setSelectedGenre(genre);
+            setView("catalogo");
+          }}
           activeView={view}
           onInicio={handleInicio}
           onProductos={() => setView("productos")}
