@@ -679,8 +679,17 @@ button {
      extremo a extremo... pero finito". Al ocupar el 100% del ancho de
      la pagina (no solo del contenido central), un aspect-ratio haria
      que la banda creciera de alto en pantallas anchas -- con un alto
-     fijo se mantiene finita sin importar el ancho de la ventana. */
-  height: 220px;
+     fijo se mantiene finita sin importar el ancho de la ventana.
+     Pedido explicito (17/09/2026): "subo imagenes de 1920x280 y algunas
+     entran y otras quedan cortadas". Con object-fit: cover, cualquier
+     alto fijo recorta arriba/abajo o a los costados segun que tan ancha
+     este la ventana en ese momento -- 220px recortaba de mas en la
+     mayoria de los anchos. Subir a 280px (el alto real de la imagen que
+     esta subiendo) hace que en una pantalla de 1920px de ancho la
+     imagen entre COMPLETA, sin recorte, y en el resto de los anchos
+     recorta bastante menos que antes. Sigue siendo una banda finita, no
+     "puro carrusel" (60px mas que antes, nada mas). */
+  height: 280px;
   overflow: hidden;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -758,7 +767,7 @@ button {
 
 @media (max-width: 640px) {
   .qq-carousel-viewport {
-    height: 130px;
+    height: 160px;
   }
 }
 
