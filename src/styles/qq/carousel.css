@@ -71,21 +71,23 @@
 
 .qq-carousel-viewport {
   position: relative;
-  /* Pedido explicito (17/09/2026): "en PC hay imagenes que quedan
-     cortadas... en celular se ve bien, no lo rompas". Antes esto tenia
-     un ALTO FIJO (316px) pensado para que la banda no creciera en
-     pantallas anchas -- pero con alto fijo, el contenedor solo coincide
-     en proporcion con la imagen (1920x280 = 6.857:1) en UN ancho de
-     pantalla exacto; en cualquier otro ancho de escritorio, cover
-     recortaba los costados. La solucion de fondo es hacer que el
-     CONTENEDOR tenga siempre la MISMA proporcion que la imagen
-     recomendada (1920/280), en vez de un alto fijo -- asi coincide en
-     CUALQUIER ancho de PC, no solo en uno. La banda sigue siendo finita
-     (nunca "puro carrusel"): a 1920px de ancho da exactamente 280px de
-     alto, a 1280px da ~187px, etc., siempre la misma forma panoramica.
-     En celular esto se pisa mas abajo con un alto fijo (ver media query
-     max-width:640) para no tocar el resultado que ya estaba bien. */
-  aspect-ratio: 1920 / 280;
+  /* Pedido explicito (18/09/2026): "las imagenes 1 y 2 se ven perfectas,
+     pero desde la 3 en adelante quedan chicas dentro del carrusel...
+     tomar como referencia las imagenes 1 y 2". Se midieron las 8
+     imagenes reales cargadas en la base: la 1 y la 2 son 1920x271
+     (proporcion 7.085:1) -- la 3 a la 8 son mucho mas "cuadradas"
+     (entre 2.5:1 y 3:1, nada que ver con una banda panoramica). No es
+     un bug de CSS: esas 6 imagenes tienen otra forma, punto. La
+     proporcion 1920/280 que se habia usado antes era una aproximacion a
+     ojo (basada en lo que el cliente DIJO que subia, no en lo que
+     realmente media el archivo) -- se corrige a la proporcion real
+     medida de las imagenes 1 y 2 (1920/271), que son las que el cliente
+     confirma que se ven bien. Con object-fit: contain (mas abajo), una
+     imagen nueva en esta proporcion exacta llena el carrusel de punta a
+     punta sin dejar ningun espacio; una imagen en otra proporcion se ve
+     completa pero mas chica, nunca recortada ni deformada -- es lo
+     esperado para una imagen que no viene en el tamaño recomendado. */
+  aspect-ratio: 1920 / 271;
   overflow: hidden;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -106,15 +108,16 @@
 .qq-carousel-slide img {
   width: 100%;
   height: 100%;
-  /* "contain" en vez de "cover" en desktop: aunque el contenedor ya
-     coincide en proporcion con la medida recomendada (1920x280), una
-     imagen que no venga EXACTO en esa proporcion (subida a mano, sin
-     recortar) igual tiene que entrar completa -- con contain nunca se
-     recorta, en el peor caso queda una franja del fondo del carrusel a
-     los costados (nunca arriba/abajo, que es donde suele ir contenido
-     importante). En celular esto se pisa mas abajo por "cover" (ver
-     media query max-width:640), que es el resultado que ya andaba bien
-     ahi. */
+  /* "contain", nunca "cover" -- pedido explicito: "no quiero solucionar
+     esto recortando ni deformando las imagenes". Con la proporcion del
+     contenedor ya ajustada a la medida real de las imagenes de
+     referencia (1920x271, ver .qq-carousel-viewport), una imagen nueva
+     en esa misma proporcion llena el carrusel completo sin dejar
+     espacio (contain y cover dan exactamente el mismo resultado cuando
+     las proporciones coinciden). Si alguien sube una imagen con otra
+     forma, contain la muestra completa y mas chica en vez de recortarla
+     -- nunca al reves. Funciona igual en PC y en celular, no hace falta
+     un caso especial por ancho de pantalla. */
   object-fit: contain;
   display: block;
 }
@@ -168,19 +171,4 @@
 .qq-carousel-dot.is-active {
   background: var(--color-accent);
   transform: scale(1.25);
-}
-
-/* Celular: se mantiene EXACTAMENTE el resultado que ya andaba bien
-   (pedido explicito: "en celular no lo rompas") -- alto fijo (no la
-   proporcion 1920/280 de arriba) + cover, para que el recorte lateral
-   deje siempre el centro de la imagen a la vista. */
-@media (max-width: 640px) {
-  .qq-carousel-viewport {
-    aspect-ratio: auto;
-    height: 180px;
-  }
-
-  .qq-carousel-slide img {
-    object-fit: cover;
-  }
 }
