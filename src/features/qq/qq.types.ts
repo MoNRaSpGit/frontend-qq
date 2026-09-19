@@ -12,6 +12,9 @@ export type QqProductStatus = "published" | "draft";
 export type QqCarouselImage = {
   id: number;
   createdAt: string;
+  // Hash corto del binario -- va en la URL (?v=) para saltear la cache de un
+  // anio del navegador cuando se reemplaza el contenido de la imagen.
+  version: string;
 };
 
 // Cuenta corriente (15/09/2026): SOLO el admin ve esto (email/telefono

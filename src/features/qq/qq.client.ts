@@ -115,8 +115,8 @@ export async function uploadProductImage(token: string, productId: number, dataU
 // Carrusel de fondos (15/09/2026): el admin carga fotos desde su propia
 // pestaña y el sitio va rotando entre ellas + la foto original fija de
 // public/ como fondo de toda la pagina (ver QqHomePage.tsx).
-export function getCarouselImageSrc(imageId: number): string {
-  return buildUrl(`/qq/carousel/${imageId}/image`);
+export function getCarouselImageSrc(image: Pick<QqCarouselImage, "id" | "version">): string {
+  return buildUrl(`/qq/carousel/${image.id}/image?v=${image.version}`);
 }
 
 export async function listCarouselImages() {

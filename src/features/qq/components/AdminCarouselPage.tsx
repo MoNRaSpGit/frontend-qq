@@ -84,7 +84,7 @@ export function AdminCarouselPage({ token, images, isLoading, error, onAgregada,
       <div className="qq-carousel-grid">
         {images.map((image, index) => (
           <div className="qq-carousel-item" key={image.id}>
-            <img src={getCarouselImageSrc(image.id)} alt={`Fondo del carrusel #${index + 2}`} />
+            <img src={getCarouselImageSrc(image)} alt={`Fondo del carrusel #${index + 2}`} />
             {confirmandoId === image.id ? (
               <div className="qq-carousel-item-confirm">
                 <span>¿Eliminar?</span>

@@ -40,7 +40,7 @@ export function Carousel({ images }: CarouselProps) {
         <div className="qq-carousel-track" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
           {images.map((image) => (
             <div className="qq-carousel-slide" key={image.id}>
-              <img src={getCarouselImageSrc(image.id)} alt="" loading="lazy" />
+              <img src={getCarouselImageSrc(image)} alt="" loading="lazy" />
             </div>
           ))}
         </div>
