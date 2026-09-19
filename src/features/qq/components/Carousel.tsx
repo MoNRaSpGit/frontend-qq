@@ -15,14 +15,18 @@ const AUTOPLAY_MS = 5000;
 // sigue siendo siempre la original, fija).
 export function Carousel({ images }: CarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  // Pedido explicito (19/09/2026): "si alguien pone el cursor en el
+  // carrusel, que pare y no siga pasando imagenes". Al sacar el cursor
+  // vuelve a andar solo (el conteo de los 5s arranca de nuevo).
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (images.length < 2) return;
+    if (images.length < 2 || isPaused) return;
     const intervalId = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % images.length);
     }, AUTOPLAY_MS);
     return () => window.clearInterval(intervalId);
-  }, [images.length]);
+  }, [images.length, isPaused]);
 
   if (images.length === 0) return null;
 
@@ -31,7 +35,7 @@ export function Carousel({ images }: CarouselProps) {
   }
 
   return (
-    <div className="qq-carousel">
+    <div className="qq-carousel" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
       <div className="qq-carousel-viewport">
         <div className="qq-carousel-track" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
           {images.map((image) => (
