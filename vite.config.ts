@@ -37,9 +37,10 @@ export default defineConfig(({ mode }) => {
   );
 
   return {
-    // OJO: si el repo de GitHub Pages termina con otro nombre, ajustar
-    // este base (tiene que matchear "https://<usuario>.github.io/<repo>/").
-    base: isGithubPagesBuild ? "/frontend-qq/" : "/",
+    // Pedido explicito (18/09/2026): dominio propio www.qqdigital.net. Con
+    // dominio propio el sitio vive en la raiz (no en /frontend-qq/) -- ver
+    // public/CNAME para la config de GitHub Pages del lado del repo.
+    base: "/",
     plugins: [
       react(),
       {
