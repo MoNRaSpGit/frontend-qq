@@ -1,11 +1,11 @@
 import type { QqCartItem } from "./qq.cart";
 import { getVariantPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
 
-// Numero real del cliente (17/09/2026: se vuelve a cambiar a 092945696,
-// pedido explicito) en formato internacional para wa.me -- misma receta
-// que ya usamos en el resto del monorepo: solo digitos, sin "+" ni
+// Numero real del cliente (19/09/2026: se cambia a 098 856 076, pedido
+// explicito; antes 092945696) en formato internacional para wa.me -- misma
+// receta que ya usamos en el resto del monorepo: solo digitos, sin "+" ni
 // espacios, prefijo 598 si no lo tiene.
-const WHATSAPP_RAW_NUMBER = "092945696";
+const WHATSAPP_RAW_NUMBER = "098 856 076";
 
 export function toWhatsAppNumber(raw: string): string {
   const digits = raw.replace(/\D/g, "");
