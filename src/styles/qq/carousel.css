@@ -89,17 +89,7 @@
      mismo que se le sacó a .qq-header en header.css (16px->10px de
      padding x2, mas 72px->48px de logo = 36px en total), asi el alto
      combinado de cabecera+carrusel no cambia. */
-  /* Pedido explicito (19/09/2026): "en pantalla completa se cortan en la
-     altura (media cabeza del jugador), pero en ventana chica o celular se
-     ven impecables". Causa: con alto FIJO (316px) y ancho 100%, cuanto
-     mas ancha la ventana mas se escala la imagen para llenar el ancho, y
-     pasado ~2160px de ancho su alto supera los 316px -> cover corta arriba
-     y abajo. Ahora las 6 imagenes del carrusel son 1920x271 (misma
-     proporcion), asi que en PC el recuadro tiene esa MISMA proporcion en
-     vez de un alto fijo: crece junto con el ancho y la imagen entra
-     completa a cualquier tamanio de ventana. Celular NO se toca (ver
-     media query de abajo: alto fijo 180px, ahi ya se veia bien). */
-  aspect-ratio: 1920 / 271;
+  height: 316px;
   overflow: hidden;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -177,7 +167,6 @@
 
 @media (max-width: 640px) {
   .qq-carousel-viewport {
-    aspect-ratio: auto;
     height: 180px;
   }
 }
