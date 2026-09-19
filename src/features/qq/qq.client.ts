@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../../shared/config/api";
+import { getVariantPrice } from "./qq.pricing";
 import type { QqCarouselImage, QqClient, QqProduct, QqProductStatus, QqUser } from "./qq.types";
 
 function buildUrl(path: string) {
@@ -110,6 +111,34 @@ export async function uploadProductImage(token: string, productId: number, dataU
   });
   const data = await readJson<{ item: QqProduct }>(response);
   return data.item;
+}
+
+// Avisa al backend que alguien toco "Comprar por WhatsApp" con este carrito
+// (19/09/2026, pedido explicito: contabilizar las ventas). Es una intencion
+// de compra, no una venta confirmada -- el pedido se cierra por WhatsApp,
+// afuera del sistema. Dispara y olvida: NUNCA puede demorar ni romper el
+// salto a WhatsApp, por eso traga cualquier error, y usa keepalive para que
+// el pedido termine de salir aunque el navegador cambie de pestaña.
+export function reportWhatsAppCheckout(items: Array<{ product: QqProduct; variant: "cuenta" | "perfil"; quantity: number }>): void {
+  try {
+    const payloadItems = items.map((item) => ({
+      productId: item.product.id,
+      name: item.product.name,
+      variant: item.variant,
+      quantity: item.quantity,
+      unitPrice: getVariantPrice(item.product, item.variant)
+    }));
+    const total = Math.round(payloadItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0) * 100) / 100;
+
+    void fetch(buildUrl("/qq/events/whatsapp-checkout"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: payloadItems, total }),
+      keepalive: true
+    }).catch(() => {});
+  } catch {
+    // Nunca frena al cliente.
+  }
 }
 
 // Carrusel de fondos (15/09/2026): el admin carga fotos desde su propia

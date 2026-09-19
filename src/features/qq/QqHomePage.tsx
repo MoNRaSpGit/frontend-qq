@@ -383,6 +383,13 @@ export function QqHomePage() {
             setCartItems(clearCart());
             toast.success("Carrito vaciado.");
           }}
+          // Pedido explicito (19/09/2026): al tocar "Comprar por WhatsApp" el
+          // carrito tiene que vaciarse (antes quedaba la lista armada). Se
+          // cierra tambien el cajon para volver a una pantalla limpia.
+          onCompraEnviada={() => {
+            setCartItems(clearCart());
+            setShowCart(false);
+          }}
         />
       ) : null}
 

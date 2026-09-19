@@ -1,4 +1,5 @@
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
+import { reportWhatsAppCheckout } from "../qq.client";
 import { getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 
@@ -8,10 +9,27 @@ type CartDrawerProps = {
   onCambiarCantidad: (productId: number, variant: QqPriceVariant, quantity: number) => void;
   onQuitar: (productId: number, variant: QqPriceVariant) => void;
   onVaciar: () => void;
+  // Se llama despues de tocar "Comprar por WhatsApp": el carrito ya se
+  // mando, asi que la pantalla lo vacia y cierra el cajon (ver
+  // QqHomePage.tsx).
+  onCompraEnviada: () => void;
 };
 
-export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVaciar }: CartDrawerProps) {
+// Retraso antes de vaciar el carrito tras tocar "Comprar por WhatsApp".
+// Si se vaciara en el mismo instante del click, el <a> desapareceria del
+// DOM (el cajon muestra "todavia no agregaste nada" con carrito vacio)
+// antes de que el navegador termine de abrir WhatsApp -- en algunos
+// navegadores (los internos de Instagram/Facebook, sobre todo) eso puede
+// perder el salto. Con el retraso el enlace ya se abrio.
+const CLEAR_AFTER_CHECKOUT_MS = 600;
+
+export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVaciar, onCompraEnviada }: CartDrawerProps) {
   const totals = getCartTotalsByCurrency(items);
+
+  function handleWhatsAppClick() {
+    reportWhatsAppCheckout(items);
+    window.setTimeout(onCompraEnviada, CLEAR_AFTER_CHECKOUT_MS);
+  }
 
   return (
     <div className="qq-modal-overlay" onClick={onCerrar}>
@@ -82,6 +100,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
               target="_blank"
               rel="noopener noreferrer"
               className="qq-button qq-button--whatsapp qq-cart-whatsapp"
+              onClick={handleWhatsAppClick}
             >
               Comprar por WhatsApp
             </a>
