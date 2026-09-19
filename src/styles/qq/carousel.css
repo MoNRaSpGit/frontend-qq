@@ -89,7 +89,19 @@
      mismo que se le sacó a .qq-header en header.css (16px->10px de
      padding x2, mas 72px->48px de logo = 36px en total), asi el alto
      combinado de cabecera+carrusel no cambia. */
-  height: 316px;
+  /* Pedido explicito (19/09/2026): "en full screen se corta la altura
+     (media cabeza), en 50% y celular se ve impecable... volvamos al alto
+     fijo pero que la imagen entre toda". Punto de vuelta atras: tag git
+     punto-carrusel-alto-fijo-316 (alto fijo puro, sin esta formula).
+     El alto es el MAYOR entre 316px (el de siempre: gordito, como se ve
+     bien en ventana chica) y el que necesita una imagen 1920x271 para
+     entrar entera a lo ancho de la ventana (100vw * 271/1920). Hasta
+     ~2240px de ancho manda el 316px de siempre (nada cambia); en
+     monitores mas anchos el recuadro crece lo justo para que cover ya no
+     tenga que cortar arriba/abajo. Para agrandar el carrusel en general,
+     subir el 316px de --qq-carousel-min-height. Celular: alto fijo abajo. */
+  --qq-carousel-min-height: 316px;
+  height: max(var(--qq-carousel-min-height), calc(100vw * 271 / 1920));
   overflow: hidden;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
