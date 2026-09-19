@@ -177,8 +177,16 @@
   transform: scale(1.25);
 }
 
+/* Celular (19/09/2026): con las imagenes ya aplastadas a 1920x271 (7:1), un
+   alto fijo de 180px obligaba a agrandarlas tanto que solo se veia el ~30%
+   del centro ("se ve horrible"). Ahora el alto acompania al ancho de la
+   pantalla (la imagen entera mediria ~55px a 390px de ancho) pero con un
+   piso de 80px para que no quede una tirita: se ve ~70% del ancho, con
+   todo el alto. Punto de vuelta atras: tag punto-carrusel-hibrido-316.
+   Para mas alto en celular, subir --qq-carousel-mobile-min-height. */
 @media (max-width: 640px) {
   .qq-carousel-viewport {
-    height: 180px;
+    --qq-carousel-mobile-min-height: 80px;
+    height: max(var(--qq-carousel-mobile-min-height), calc(100vw * 271 / 1920));
   }
 }
