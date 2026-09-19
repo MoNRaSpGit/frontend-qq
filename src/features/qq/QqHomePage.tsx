@@ -10,12 +10,13 @@ import { Carousel } from "./components/Carousel";
 import { CartDrawer } from "./components/CartDrawer";
 import { ClientFormModal } from "./components/ClientFormModal";
 import { Header } from "./components/Header";
+import { MiniCart, type QqLastAdded } from "./components/MiniCart";
 import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
-import { QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "./qq.pricing";
+import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqCarouselImage, QqClient, QqProduct } from "./qq.types";
 
@@ -57,6 +58,8 @@ export function QqHomePage() {
   const [selectedProduct, setSelectedProduct] = useState<QqProduct | null>(null);
   const [cartItems, setCartItems] = useState<QqCartItem[]>(() => loadCart());
   const [showCart, setShowCart] = useState(false);
+  // Ultimo producto agregado: dispara el mini carrito lateral (MiniCart).
+  const [lastAdded, setLastAdded] = useState<QqLastAdded | null>(null);
   const searchRowRef = useRef<HTMLFormElement>(null);
   const [fadeStart, setFadeStart] = useState<number | null>(null);
 
@@ -162,7 +165,11 @@ export function QqHomePage() {
   function handleAgregarAlCarrito(product: QqProduct, variant: QqPriceVariant, quantity: number) {
     setCartItems((current) => addToCart(current, product, variant, quantity));
     setSelectedProduct(null);
-    toast.success(`"${product.name}" (${QQ_PRICE_VARIANT_LABELS[variant]}) se agregó al carrito.`);
+    // Pedido explicito (19/09/2026): en vez del toast "se agrego al
+    // carrito", entra el mini carrito lateral con el resumen (ver
+    // MiniCart.tsx). Un id nuevo por agregado hace que reaparezca y
+    // reinicie los 3 segundos aunque ya estuviera a la vista.
+    setLastAdded({ id: Date.now(), product, variant, quantity });
   }
 
   function handleEditar(product: QqProduct) {
@@ -370,6 +377,8 @@ export function QqHomePage() {
           onEliminar={(product) => void handleEliminar(product)}
         />
       ) : null}
+
+      <MiniCart items={cartItems} lastAdded={lastAdded} hidden={showCart} onVerCarrito={() => setShowCart(true)} />
 
       {showCart ? (
         <CartDrawer

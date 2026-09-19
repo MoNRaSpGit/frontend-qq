@@ -1,0 +1,205 @@
+/* Mini carrito lateral (19/09/2026): vista rapida que entra desde la derecha
+   al agregar un producto y se va solo a los ~3 segundos. A diferencia del
+   carrito completo (cart.css, con fondo oscuro que tapa la pagina), aca NO
+   hay overlay: solo el panel ocupa lugar y todo lo demas se puede seguir
+   tocando. z-index 45: por encima del header y del boton de WhatsApp (40),
+   por debajo de los modales (50). */
+.qq-minicart {
+  position: fixed;
+  top: 84px;
+  right: 12px;
+  z-index: 45;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 18px;
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  /* Cerrado: fuera de pantalla, invisible y sin recibir clicks ni foco. La
+     visibilidad se retrasa hasta que termina de salir para que se vea el
+     deslizamiento de salida. */
+  transform: translateX(calc(100% + 24px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.28s ease, opacity 0.2s ease, visibility 0s linear 0.28s;
+}
+
+.qq-minicart.is-open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 0.28s ease, opacity 0.2s ease, visibility 0s;
+}
+
+.qq-minicart-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+}
+
+.qq-minicart-check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #141414;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.qq-minicart-header strong {
+  flex: 1;
+}
+
+.qq-minicart-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qq-minicart-added {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.qq-minicart-added span {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13.5px;
+}
+
+.qq-minicart-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.qq-minicart-list li.is-new {
+  color: var(--color-accent);
+}
+
+.qq-minicart-line-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qq-minicart-line-name span {
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-line-qty {
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-line-price {
+  min-width: 46px;
+  text-align: right;
+  font-weight: 700;
+}
+
+.qq-minicart-more {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.qq-minicart-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.qq-minicart-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qq-minicart-summary span {
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-summary div:last-child strong {
+  font-size: 17px;
+  color: var(--color-accent);
+}
+
+.qq-minicart-view {
+  width: 100%;
+  min-height: 38px;
+}
+
+/* Barra de cuenta regresiva pegada al borde de abajo: se vacia en 3s. */
+.qq-minicart-timer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--color-accent);
+  transform-origin: left center;
+  animation: qq-minicart-countdown 3s linear forwards;
+}
+
+.qq-minicart-timer.is-paused {
+  animation: none;
+}
+
+@keyframes qq-minicart-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .qq-minicart {
+    top: 72px;
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qq-minicart,
+  .qq-minicart.is-open {
+    transition: none;
+  }
+}
