@@ -21,16 +21,19 @@ type MiniCartProps = {
   onVerCarrito: () => void;
 };
 
-const VISIBLE_MS = 3000;
-const MAX_LINES = 4;
+// Pedido explicito (19/09/2026): "que dure 5 seg" (antes 3). Tambien lo usa
+// la barra que se vacia (animationDuration, mas abajo), asi los dos siempre
+// coinciden.
+const VISIBLE_MS = 5000;
 
 // Vista rapida del carrito (19/09/2026, pedido explicito): al agregar un
-// producto entra desde el costado un panel con la confirmacion, lo que hay
-// en el carrito, cuantos productos son y el total acumulado, y a los ~3
-// segundos se va solo. NO es el carrito completo (ese sigue abriendose con
-// el icono del header) y NO bloquea la pagina: no hay fondo oscuro, solo el
-// panel ocupa lugar y el resto se sigue pudiendo tocar. Si el cursor esta
-// encima, espera (se puede leer con calma); al sacarlo, vuelven los 3s.
+// producto entra desde el costado un panel a TODO LO ALTO de la pantalla
+// con la confirmacion, lo que hay en el carrito, cuantos productos son y el
+// total acumulado, y a los 5 segundos se va solo. NO es el carrito completo
+// (ese sigue abriendose con el icono del header) y NO bloquea la pagina: no
+// hay fondo oscuro, solo el panel ocupa lugar y el resto se sigue pudiendo
+// tocar. Si el cursor esta encima, espera (se puede leer con calma); al
+// sacarlo, vuelven los 5s.
 export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartProps) {
   const [visible, setVisible] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -50,8 +53,6 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
 
   const isOpen = visible && !hidden && lastAdded !== null;
   const totals = getCartTotalsByCurrency(items);
-  const shownItems = items.slice(0, MAX_LINES);
-  const hiddenCount = items.length - shownItems.length;
 
   return (
     <aside
@@ -80,7 +81,7 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
       ) : null}
 
       <ul className="qq-minicart-list">
-        {shownItems.map((item) => {
+        {items.map((item) => {
           const isNew = lastAdded !== null && item.product.id === lastAdded.product.id && item.variant === lastAdded.variant;
           return (
             <li key={`${item.product.id}-${item.variant}`} className={isNew ? "is-new" : undefined}>
@@ -92,7 +93,6 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
             </li>
           );
         })}
-        {hiddenCount > 0 ? <li className="qq-minicart-more">y {hiddenCount} más…</li> : null}
       </ul>
 
       <div className="qq-minicart-summary">
@@ -115,7 +115,11 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
       {/* Barra que se va vaciando: muestra cuanto falta para que se cierre.
           Se reinicia con cada agregado y con cada vez que se saca el cursor
           (key), y queda llena mientras el cursor esta encima. */}
-      <div className={paused ? "qq-minicart-timer is-paused" : "qq-minicart-timer"} key={`${lastAddedId ?? 0}-${paused}`} />
+      <div
+        className={paused ? "qq-minicart-timer is-paused" : "qq-minicart-timer"}
+        key={`${lastAddedId ?? 0}-${paused}`}
+        style={{ animationDuration: `${VISIBLE_MS}ms` }}
+      />
     </aside>
   );
 }
