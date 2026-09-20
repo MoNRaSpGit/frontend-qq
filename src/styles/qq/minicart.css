@@ -1,34 +1,44 @@
 /* Mini carrito lateral (19/09/2026): vista rapida que entra desde la derecha
-   al agregar un producto y se va solo a los 5 segundos. Pedido explicito:
-   "hacelo en todo lo alto" -- ocupa toda la altura de la pantalla, pegado al
-   borde derecho. A diferencia del carrito completo (cart.css, con fondo
-   oscuro que tapa la pagina), aca NO hay overlay: solo el panel ocupa lugar
-   y todo lo demas se puede seguir tocando. z-index 45: por encima del header
-   y del boton de WhatsApp (40), por debajo de los modales (50). */
+   al agregar un producto y se va solo a los 3,5 segundos. A todo lo alto de
+   la pantalla, sin fondo oscuro ni bloquear la pagina (a diferencia del
+   carrito completo, cart.css). z-index 45: por encima del header y del
+   boton de WhatsApp (40), por debajo de los modales (50).
+
+   Segunda version, pedido explicito: "mas lindo, mas elaborado, este
+   proyecto es para gente joven". Vidrio translucido con desenfoque, brillo
+   dorado, check que se dibuja, foto/logo de cada producto, etiquetas de
+   color, total que cuenta hacia arriba y barra de tiempo con brillo. Toda la
+   animacion queda atada a `.is-open` para que se repita cada vez que el
+   panel entra. */
 .qq-minicart {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   z-index: 45;
-  width: 360px;
-  max-width: calc(100vw - 40px);
+  width: 372px;
+  max-width: calc(100vw - 32px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  gap: 14px;
+  padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
   overflow: hidden;
-  background: var(--color-bg-elevated);
-  border-left: 4px solid var(--color-accent);
-  box-shadow: -18px 0 40px rgba(0, 0, 0, 0.5);
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgba(230, 179, 37, 0.22), transparent 60%),
+    linear-gradient(180deg, rgba(30, 30, 35, 0.9), rgba(10, 10, 12, 0.94));
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+  border-left: 1px solid rgba(230, 179, 37, 0.45);
+  border-radius: 26px 0 0 26px;
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.55), -2px 0 24px rgba(230, 179, 37, 0.16);
   /* Cerrado: fuera de pantalla, invisible y sin recibir clicks ni foco. La
      visibilidad se retrasa hasta que termina de salir para que se vea el
      deslizamiento de salida. */
-  transform: translateX(calc(100% + 24px));
+  transform: translateX(calc(100% + 32px));
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: transform 0.28s ease, opacity 0.2s ease, visibility 0s linear 0.28s;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 1, 1), opacity 0.22s ease, visibility 0s linear 0.32s;
 }
 
 .qq-minicart.is-open {
@@ -36,147 +46,428 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: transform 0.28s ease, opacity 0.2s ease, visibility 0s;
-}
-
-.qq-minicart-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14.5px;
-}
-
-.qq-minicart-check {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: var(--color-accent);
-  color: #141414;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.qq-minicart-header strong {
-  flex: 1;
+  /* Entrada con un pequeno "rebote" para que se sienta con energia. */
+  transition: transform 0.5s cubic-bezier(0.22, 1.2, 0.36, 1), opacity 0.22s ease, visibility 0s;
 }
 
 .qq-minicart-close {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.07);
   color: var(--color-text);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.qq-minicart-added {
+.qq-minicart-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: rotate(90deg);
+}
+
+/* ---------- Encabezado: check animado + titulo ---------- */
+.qq-minicart-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 34px;
+}
+
+.qq-minicart-hero h3 {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-accent);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #ffe08a, var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.qq-minicart-added span {
-  font-weight: 500;
+.qq-minicart-hero p {
+  margin: 2px 0 0;
+  font-size: 13.5px;
   color: var(--color-text-muted);
 }
 
-/* Ocupa todo el alto que sobra entre el titulo y el resumen: muestra TODOS
-   los productos del carrito y, si son muchos, hace scroll adentro. */
-.qq-minicart-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  list-style: none;
-  margin: 0;
-  padding: 12px 0;
+.qq-minicart-check-wrap {
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  font-size: 14.5px;
+  width: 54px;
+  height: 54px;
 }
 
-.qq-minicart-list li {
+.qq-minicart-check {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 10px rgba(230, 179, 37, 0.55));
+}
+
+.qq-minicart-check-circle,
+.qq-minicart-check-mark {
+  stroke: var(--color-accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 145;
+  stroke-dashoffset: 145;
+}
+
+.qq-minicart-check-mark {
+  stroke: #ffe08a;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+}
+
+.qq-minicart.is-open .qq-minicart-check-circle {
+  animation: qq-minicart-draw 0.55s 0.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.qq-minicart.is-open .qq-minicart-check-mark {
+  animation: qq-minicart-draw 0.35s 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.qq-minicart.is-open .qq-minicart-check-wrap {
+  animation: qq-minicart-pop 0.5s 0.9s ease-out;
+}
+
+@keyframes qq-minicart-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes qq-minicart-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Producto recien agregado (tarjeta destacada) ---------- */
+.qq-minicart-added {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid rgba(230, 179, 37, 0.55);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(230, 179, 37, 0.18), rgba(230, 179, 37, 0.04));
+  box-shadow: 0 0 0 4px rgba(230, 179, 37, 0.07), 0 10px 26px rgba(0, 0, 0, 0.35);
 }
 
-.qq-minicart-list li.is-new {
-  color: var(--color-accent);
+.qq-minicart.is-open .qq-minicart-added {
+  animation: qq-minicart-rise 0.5s 0.2s cubic-bezier(0.22, 1.2, 0.36, 1) both;
 }
 
-.qq-minicart-line-name {
+@keyframes qq-minicart-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.qq-minicart-added-info {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.qq-minicart-line-name span {
-  color: var(--color-text-muted);
-}
-
-.qq-minicart-line-qty {
-  color: var(--color-text-muted);
-}
-
-.qq-minicart-line-price {
-  min-width: 46px;
-  text-align: right;
-  font-weight: 700;
-}
-
-.qq-minicart-summary {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 15px;
 }
 
-.qq-minicart-summary div {
+.qq-minicart-added-info strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+.qq-minicart-added-meta {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-added-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+/* ---------- Miniaturas y etiquetas ---------- */
+.qq-minicart-thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid var(--color-accent);
+  background: #000;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.qq-minicart-thumb--lg {
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  font-size: 20px;
+}
+
+.qq-minicart-thumb--sm {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border-width: 1.5px;
+  font-size: 14px;
+}
+
+.qq-minicart-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.qq-minicart-pill {
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.qq-minicart-pill--perfil {
+  background: rgba(47, 178, 232, 0.16);
+  color: var(--color-celeste);
+}
+
+.qq-minicart-pill--cuenta {
+  background: rgba(230, 179, 37, 0.16);
+  color: var(--color-accent);
+}
+
+/* ---------- Resto del carrito ---------- */
+.qq-minicart-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.qq-minicart-section {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qq-minicart-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Cada renglon entra con un pequeno retraso segun su posicion (--i). */
+.qq-minicart.is-open .qq-minicart-row {
+  animation: qq-minicart-slide-in 0.4s calc(0.35s + var(--i, 0) * 0.07s) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes qq-minicart-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.qq-minicart-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qq-minicart-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.qq-minicart-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-row-price {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+
+/* ---------- Pie: cantidad, total y boton ---------- */
+.qq-minicart-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qq-minicart-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-count strong {
+  min-width: 30px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  color: var(--color-text);
+}
+
+.qq-minicart-total {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
 
-.qq-minicart-summary span {
+.qq-minicart-total > span {
+  font-size: 14px;
   color: var(--color-text-muted);
 }
 
-.qq-minicart-summary div:last-child strong {
-  font-size: 20px;
-  color: var(--color-accent);
+.qq-minicart-total strong {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, #ffe08a, var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.qq-minicart-view {
+.qq-minicart-total small {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--color-text-muted);
+  -webkit-text-fill-color: var(--color-text-muted);
+}
+
+.qq-minicart-extra-totals {
+  margin: -4px 0 0;
+  text-align: right;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.qq-minicart-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  min-height: 44px;
+  min-height: 50px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffe08a, var(--color-accent));
+  color: #141414;
+  font-size: 15.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(230, 179, 37, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Barra de cuenta regresiva pegada al borde de abajo: se vacia en 5s (la
-   duracion real la pone MiniCart.tsx con style, desde VISIBLE_MS -- este
-   valor es solo el de respaldo). */
+.qq-minicart-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(230, 179, 37, 0.5);
+}
+
+.qq-minicart-cta svg {
+  transition: transform 0.15s ease;
+}
+
+.qq-minicart-cta:hover svg {
+  transform: translateX(3px);
+}
+
+.qq-minicart-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Barra de cuenta regresiva ---------- */
+/* Pegada al borde de abajo, con brillo. La duracion real la pone
+   MiniCart.tsx con style (desde VISIBLE_MS); este valor es solo el de
+   respaldo. */
 .qq-minicart-timer {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 4px;
-  background: var(--color-accent);
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-celeste), var(--color-accent));
+  box-shadow: 0 0 14px rgba(230, 179, 37, 0.8);
   transform-origin: left center;
-  animation: qq-minicart-countdown 5s linear forwards;
+  animation: qq-minicart-countdown 3.5s linear forwards;
 }
 
 .qq-minicart-timer.is-paused {
@@ -196,14 +487,38 @@
    relleno, para que quede una franja de la pagina a la vista y tocable. */
 @media (max-width: 480px) {
   .qq-minicart {
-    width: 320px;
-    padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    width: 330px;
+    padding: 18px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    border-radius: 22px 0 0 22px;
+  }
+
+  .qq-minicart-hero h3 {
+    font-size: 23px;
+  }
+
+  .qq-minicart-total strong {
+    font-size: 30px;
   }
 }
 
+/* Sin animaciones para quien las tiene desactivadas en su sistema: el panel
+   aparece y se va sin moverse y el check ya viene dibujado. */
 @media (prefers-reduced-motion: reduce) {
   .qq-minicart,
   .qq-minicart.is-open {
     transition: none;
+  }
+
+  .qq-minicart.is-open .qq-minicart-check-circle,
+  .qq-minicart.is-open .qq-minicart-check-mark,
+  .qq-minicart.is-open .qq-minicart-check-wrap,
+  .qq-minicart.is-open .qq-minicart-added,
+  .qq-minicart.is-open .qq-minicart-row {
+    animation: none;
+  }
+
+  .qq-minicart-check-circle,
+  .qq-minicart-check-mark {
+    stroke-dashoffset: 0;
   }
 }
