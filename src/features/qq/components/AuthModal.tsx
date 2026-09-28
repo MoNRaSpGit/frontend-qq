@@ -1,18 +1,28 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { loginUser, registerUser } from "../qq.client";
 import type { QqSession } from "../qq.session";
 
 type AuthModalProps = {
   onCancelar: () => void;
+  onQuickAdminLogin: () => void;
   onIngresado: (session: QqSession) => void;
 };
+
+// Atajo pedido explicitamente (28/09/2026): 5 clicks seguidos (menos de
+// 1.5s entre uno y el siguiente) sobre el boton "Ingresar" de este modal
+// inician sesion como administrador directo, sin pedir contrasena. Va
+// aca (y no en el logo del header) porque esta es la unica palabra
+// "Ingresar" que se ve de verdad en la pantalla.
+const QUICK_ADMIN_CLICKS = 5;
+const QUICK_ADMIN_WINDOW_MS = 1500;
 
 // Un solo modal para las dos cosas: entrar con una cuenta que ya existe,
 // o crear una nueva -- el registro publico siempre da el rol "usuario"
 // (solo ve el catalogo). El unico administrador se crea aparte, no por
 // aca.
-export function AuthModal({ onCancelar, onIngresado }: AuthModalProps) {
+export function AuthModal({ onCancelar, onQuickAdminLogin, onIngresado }: AuthModalProps) {
   const [modo, setModo] = useState<"login" | "registro">("login");
+  const ingresarClicksRef = useRef<{ count: number; lastClickAt: number }>({ count: 0, lastClickAt: 0 });
   // Precargado TEMPORAL con las credenciales del admin, pedido explicito
   // (15/09/2026): "para entrar rapido ahora porque estoy probando" --
   // SOLO en modo desarrollo local (import.meta.env.DEV), nunca en el
@@ -43,6 +53,21 @@ export function AuthModal({ onCancelar, onIngresado }: AuthModalProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo completar la operación.");
       setGuardando(false);
+    }
+  }
+
+  function handleIngresarButtonClick(event: MouseEvent<HTMLButtonElement>) {
+    if (modo !== "login") return;
+
+    const now = Date.now();
+    const clicks = ingresarClicksRef.current;
+    clicks.count = now - clicks.lastClickAt <= QUICK_ADMIN_WINDOW_MS ? clicks.count + 1 : 1;
+    clicks.lastClickAt = now;
+
+    if (clicks.count >= QUICK_ADMIN_CLICKS) {
+      clicks.count = 0;
+      event.preventDefault();
+      onQuickAdminLogin();
     }
   }
 
@@ -93,7 +118,12 @@ export function AuthModal({ onCancelar, onIngresado }: AuthModalProps) {
             <button type="button" className="qq-button qq-button--ghost" onClick={onCancelar} disabled={guardando}>
               Cancelar
             </button>
-            <button type="submit" className="qq-button qq-button--primary" disabled={guardando}>
+            <button
+              type="submit"
+              className="qq-button qq-button--primary"
+              onClick={handleIngresarButtonClick}
+              disabled={guardando}
+            >
               {guardando ? "Un momento..." : modo === "login" ? "Ingresar" : "Crear cuenta"}
             </button>
           </div>

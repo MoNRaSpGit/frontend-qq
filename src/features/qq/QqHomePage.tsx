@@ -298,7 +298,6 @@ export function QqHomePage() {
           onClientes={() => setView("clientes")}
           onCodigo={() => setView("codigo")}
           onIngresar={() => setShowAuthModal(true)}
-          onQuickAdminLogin={() => void handleQuickAdminLogin()}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
         />
@@ -486,6 +485,7 @@ export function QqHomePage() {
       {showAuthModal ? (
         <AuthModal
           onCancelar={() => setShowAuthModal(false)}
+          onQuickAdminLogin={() => void handleQuickAdminLogin()}
           onIngresado={(nextSession) => {
             saveSession(nextSession);
             setSession(nextSession);
