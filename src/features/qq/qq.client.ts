@@ -256,9 +256,3 @@ export async function loginUser(payload: { email: string; password: string }) {
 export async function logoutUser(token: string) {
   await fetch(buildUrl("/qq/auth/logout"), { method: "POST", headers: authHeaders(token) }).catch(() => {});
 }
-
-// Atajo pedido explicitamente (28/09/2026): 5 clicks en el logo del header.
-export async function quickAdminLogin() {
-  const response = await fetch(buildUrl("/qq/auth/quick-admin-login"), { method: "POST" });
-  return readJson<{ user: QqUser; token: string }>(response);
-}
