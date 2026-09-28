@@ -8,6 +8,7 @@ import {
   listClients,
   listProducts,
   logoutUser,
+  quickAdminLogin,
   reorderProduct
 } from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
@@ -174,6 +175,20 @@ export function QqHomePage() {
     setSelectedGenre(null);
   }
 
+  // Atajo pedido explicitamente (28/09/2026): 5 clicks en "Ingresar".
+  async function handleQuickAdminLogin() {
+    try {
+      const { user, token } = await quickAdminLogin();
+      const nextSession: QqSession = { user, token };
+      saveSession(nextSession);
+      setSession(nextSession);
+      setShowAuthModal(false);
+      toast.success(`Hola, ${user.fullName || user.email}.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo iniciar sesión.");
+    }
+  }
+
   async function handleSalir() {
     if (session) {
       await logoutUser(session.token);
@@ -283,6 +298,7 @@ export function QqHomePage() {
           onClientes={() => setView("clientes")}
           onCodigo={() => setView("codigo")}
           onIngresar={() => setShowAuthModal(true)}
+          onQuickAdminLogin={() => void handleQuickAdminLogin()}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
         />

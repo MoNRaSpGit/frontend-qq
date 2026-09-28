@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { QQ_GENRES, type QqGenreKey } from "../qq.genres";
 import type { QqSession } from "../qq.session";
@@ -18,9 +18,16 @@ type HeaderProps = {
   onClientes: () => void;
   onCodigo: () => void;
   onIngresar: () => void;
+  onQuickAdminLogin: () => void;
   onSalir: () => void;
   onAbrirCarrito: () => void;
 };
+
+// Atajo pedido explicitamente (28/09/2026): 5 clicks seguidos (menos de
+// 1.5s entre uno y el siguiente) sobre el logo/"Ingresar" inician sesion
+// como administrador directo, sin pedir contrasena.
+const QUICK_ADMIN_CLICKS = 5;
+const QUICK_ADMIN_WINDOW_MS = 1500;
 
 // "Blog" y "Contacto" todavia no tienen pantalla propia -- se dejan como
 // botones visibles (pedido tal cual) que por ahora solo avisan que viene
@@ -41,11 +48,28 @@ export function Header({
   onClientes,
   onCodigo,
   onIngresar,
+  onQuickAdminLogin,
   onSalir,
   onAbrirCarrito
 }: HeaderProps) {
   const [showFeatures, setShowFeatures] = useState(false);
   const isAdmin = session?.user.role === "administrador";
+  const ingresarClicksRef = useRef<{ count: number; lastClickAt: number }>({ count: 0, lastClickAt: 0 });
+
+  function handleIngresarClick() {
+    const now = Date.now();
+    const clicks = ingresarClicksRef.current;
+    clicks.count = now - clicks.lastClickAt <= QUICK_ADMIN_WINDOW_MS ? clicks.count + 1 : 1;
+    clicks.lastClickAt = now;
+
+    if (clicks.count >= QUICK_ADMIN_CLICKS) {
+      clicks.count = 0;
+      onQuickAdminLogin();
+      return;
+    }
+
+    onIngresar();
+  }
 
   function handleSelectGenre(genre: QqGenreKey | null) {
     onSelectGenre(genre);
@@ -61,7 +85,7 @@ export function Header({
       {session ? (
         <img className="qq-brand-logo" src={`${import.meta.env.BASE_URL}QqNeutro.png`} alt="Qq Digital" />
       ) : (
-        <button type="button" className="qq-brand-logo-button" onClick={onIngresar} aria-label="Ingresar">
+        <button type="button" className="qq-brand-logo-button" onClick={handleIngresarClick} aria-label="Ingresar">
           <img className="qq-brand-logo" src={`${import.meta.env.BASE_URL}QqNeutro.png`} alt="Qq Digital" />
         </button>
       )}
