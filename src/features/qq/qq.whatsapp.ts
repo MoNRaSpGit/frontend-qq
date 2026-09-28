@@ -43,7 +43,7 @@ export function buildCartWhatsAppMessage(
       return `Total: ${moneda}${total.toFixed(0)} /mes`;
     }
     const withDiscount = applyDiscount(total, discount.percentage);
-    return `Subtotal: ${moneda}${total.toFixed(0)} /mes\nDescuento (código ${discount.code.toUpperCase()}, ${discount.percentage}%): -${moneda}${(total - withDiscount).toFixed(0)} /mes\nTotal con descuento: ${moneda}${withDiscount.toFixed(0)} /mes`;
+    return `Subtotal: ${moneda}${total.toFixed(0)} /mes\nDescuento (código ${discount.code.toUpperCase()}, ${discount.percentage}%)\nTotal con descuento: ${moneda}${withDiscount.toFixed(0)} /mes`;
   });
 
   return ["Hola! Me gustaría comprar estos productos:", "", ...lines, "", ...totalLines].join("\n");
