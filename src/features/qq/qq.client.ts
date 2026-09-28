@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "../../shared/config/api";
 import { getVariantPrice } from "./qq.pricing";
-import type { QqCarouselImage, QqClient, QqProduct, QqProductStatus, QqUser } from "./qq.types";
+import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct, QqProductStatus, QqUser } from "./qq.types";
 
 function buildUrl(path: string) {
   return `${API_BASE_URL}/api/v1${path}`;
@@ -214,6 +214,25 @@ export async function deleteClient(token: string, clientId: number) {
     headers: authHeaders(token)
   });
   await readJson<{ ok: boolean }>(response);
+}
+
+// Codigo de descuento (28/09/2026, pedido explicito): ver es publico (el
+// carrito lo necesita para saber si mostrar el input), cambiarlo exige
+// admin.
+export async function getDiscountConfig() {
+  const response = await fetch(buildUrl("/qq/discount-config"));
+  const data = await readJson<{ item: QqDiscountConfig }>(response);
+  return data.item;
+}
+
+export async function updateDiscountConfig(token: string, payload: { code: string; percentage: number; enabled: boolean }) {
+  const response = await fetch(buildUrl("/qq/discount-config"), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload)
+  });
+  const data = await readJson<{ item: QqDiscountConfig }>(response);
+  return data.item;
 }
 
 export async function registerUser(payload: { email: string; password: string; fullName?: string }) {

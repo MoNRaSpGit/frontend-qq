@@ -11,11 +11,12 @@ type HeaderProps = {
   cartCount: number;
   selectedGenre: QqGenreKey | null;
   onSelectGenre: (genre: QqGenreKey | null) => void;
-  activeView: "catalogo" | "productos" | "carrusel" | "clientes";
+  activeView: "catalogo" | "productos" | "carrusel" | "clientes" | "codigo";
   onInicio: () => void;
   onProductos: () => void;
   onCarrusel: () => void;
   onClientes: () => void;
+  onCodigo: () => void;
   onIngresar: () => void;
   onSalir: () => void;
   onAbrirCarrito: () => void;
@@ -38,6 +39,7 @@ export function Header({
   onProductos,
   onCarrusel,
   onClientes,
+  onCodigo,
   onIngresar,
   onSalir,
   onAbrirCarrito
@@ -100,6 +102,16 @@ export function Header({
             onClick={onClientes}
           >
             Clientes
+          </button>
+        ) : null}
+
+        {isAdmin ? (
+          <button
+            type="button"
+            className={activeView === "codigo" ? "qq-nav-link is-active" : "qq-nav-link"}
+            onClick={onCodigo}
+          >
+            Código
           </button>
         ) : null}
 

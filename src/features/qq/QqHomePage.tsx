@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { deleteClient, deleteProduct, listCarouselImages, listClients, listProducts, logoutUser, reorderProduct } from "./qq.client";
+import {
+  deleteClient,
+  deleteProduct,
+  getDiscountConfig,
+  listCarouselImages,
+  listClients,
+  listProducts,
+  logoutUser,
+  reorderProduct
+} from "./qq.client";
 import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCartQuantity, type QqCartItem } from "./qq.cart";
 import { AdminCarouselPage } from "./components/AdminCarouselPage";
 import { AdminClientsPage } from "./components/AdminClientsPage";
+import { AdminDiscountPage } from "./components/AdminDiscountPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
 import { Carousel } from "./components/Carousel";
@@ -18,7 +28,7 @@ import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
-import type { QqCarouselImage, QqClient, QqProduct } from "./qq.types";
+import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct } from "./qq.types";
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
 // medio + tarjetas de producto debajo, mismo espiritu visual que Netflix
@@ -33,7 +43,7 @@ export function QqHomePage() {
   // propia del admin para cargar/editar/borrar -- pedido explicito
   // (15/09/2026): "que no ingrese directo en la pantalla principal, que
   // tenga su propia pestaña".
-  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes">("catalogo");
+  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes" | "codigo">("catalogo");
   const [query, setQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
@@ -48,6 +58,12 @@ export function QqHomePage() {
   const [clients, setClients] = useState<QqClient[]>([]);
   const [isClientsLoading, setIsClientsLoading] = useState(true);
   const [clientsError, setClientsError] = useState<string | null>(null);
+  // Codigo de descuento (28/09/2026) -- publico, se pide siempre junto con
+  // productos/carrusel. null = deshabilitado O no se pudo consultar (ver
+  // CartDrawer: en cualquiera de los dos casos, el input de codigo ni
+  // aparece -- pedido explicito: si falla, se trata igual que "no hay
+  // codigo", sin mostrarle ningun error al cliente final por esto).
+  const [discountConfig, setDiscountConfig] = useState<QqDiscountConfig | null>(null);
   // "new" = alta; un QqProduct = edicion de ese producto; null = cerrado.
   // Un solo estado para las dos cosas -- mismo modal (ver
   // ProductFormModal), pedido 15/09/2026.
@@ -123,6 +139,12 @@ export function QqHomePage() {
 
   useEffect(() => {
     void refreshCarousel();
+  }, []);
+
+  useEffect(() => {
+    getDiscountConfig()
+      .then((config) => setDiscountConfig(config.enabled ? config : null))
+      .catch(() => setDiscountConfig(null));
   }, []);
 
   // Cuenta corriente: se pide recien cuando hay sesion de admin (el
@@ -259,6 +281,7 @@ export function QqHomePage() {
           onProductos={() => setView("productos")}
           onCarrusel={() => setView("carrusel")}
           onClientes={() => setView("clientes")}
+          onCodigo={() => setView("codigo")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={() => setShowCart(true)}
@@ -305,6 +328,11 @@ export function QqHomePage() {
           onNuevo={() => setClientFormTarget("new")}
           onEditar={handleEditarCliente}
           onEliminar={(client) => void handleEliminarCliente(client)}
+        />
+      ) : view === "codigo" && isAdmin && session ? (
+        <AdminDiscountPage
+          token={session.token}
+          onGuardado={(config) => setDiscountConfig(config.enabled ? config : null)}
         />
       ) : (
         <>
@@ -399,6 +427,7 @@ export function QqHomePage() {
             setCartItems(clearCart());
             setShowCart(false);
           }}
+          discountConfig={discountConfig}
         />
       ) : null}
 

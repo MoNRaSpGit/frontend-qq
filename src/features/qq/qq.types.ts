@@ -28,6 +28,15 @@ export type QqClient = {
   createdAt: string;
 };
 
+// Codigo de descuento (28/09/2026, pedido explicito): un solo codigo
+// activo a la vez, configurable por el admin desde su propia pestaña. Si
+// "enabled" es false, el carrito no muestra el input de codigo.
+export type QqDiscountConfig = {
+  code: string;
+  percentage: number;
+  enabled: boolean;
+};
+
 // Dos precios independientes (16/09/2026): "hay tarjetas que llevan los
 // dos, otras que no". Al menos uno de los dos siempre esta cargado (se
 // valida en el backend), pero nunca los dos a la vez son obligatorios.
