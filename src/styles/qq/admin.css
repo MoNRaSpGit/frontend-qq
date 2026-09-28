@@ -143,12 +143,42 @@
   margin-top: 10px;
 }
 
-.qq-field--checkbox {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+/* Toggle grande activado/desactivado (28/09/2026, pedido explicito): en
+   vez de un checkbox chico, un boton grande que cambia de color. */
+.qq-toggle-button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.qq-field--checkbox input {
-  width: auto;
+.qq-toggle-button--on {
+  background: #1f8a3d;
+  border-color: #17692f;
+  color: #fff;
+}
+
+.qq-toggle-button--on:hover {
+  background: #1a7434;
+}
+
+.qq-toggle-button--off {
+  background: #c0392b;
+  border-color: #96291d;
+  color: #fff;
+}
+
+.qq-toggle-button--off:hover {
+  background: #a5301f;
+}
+
+.qq-toggle-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

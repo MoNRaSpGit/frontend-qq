@@ -98,10 +98,17 @@ export function AdminDiscountPage({ token, onGuardado }: AdminDiscountPageProps)
             />
           </label>
 
-          <label className="qq-field qq-field--checkbox">
-            <input type="checkbox" checked={enabled} onChange={(event) => setEnabled(event.target.checked)} disabled={isSaving} />
-            <span>Habilitado (muestra el input de código en el carrito)</span>
-          </label>
+          <div className="qq-field">
+            <span>¿Mostrar el código en el carrito?</span>
+            <button
+              type="button"
+              className={enabled ? "qq-toggle-button qq-toggle-button--on" : "qq-toggle-button qq-toggle-button--off"}
+              onClick={() => setEnabled((current) => !current)}
+              disabled={isSaving}
+            >
+              {enabled ? "Activado" : "Desactivado"}
+            </button>
+          </div>
 
           <div className="qq-modal-actions">
             <button type="button" className="qq-button qq-button--primary" onClick={() => void handleGuardar()} disabled={isSaving}>
