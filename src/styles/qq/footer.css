@@ -1,0 +1,46 @@
+/* Pie de pagina (29/09/2026, pedido explicito): "bien minimalista
+   chiquito discreto pero que se vea" -- barra finita, texto chico y
+   apagado, credito del desarrollador a la derecha con el logo. */
+.qq-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--color-border);
+  background: rgba(15, 15, 16, 0.6);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.qq-footer-copy {
+  white-space: nowrap;
+}
+
+.qq-footer-credit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.qq-footer-credit:hover {
+  opacity: 1;
+}
+
+.qq-footer-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+@media (max-width: 480px) {
+  .qq-footer {
+    padding: 10px 16px;
+    font-size: 11px;
+  }
+}
