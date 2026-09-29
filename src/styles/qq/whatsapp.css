@@ -2,7 +2,10 @@
 .qq-whatsapp-button {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  /* Subido de 20px a 84px (29/09/2026, pedido explicito: "el boton wpp
+     esta molestando") -- con el pie de pagina nuevo, a 20px quedaba
+     pegado/tapando el footer. */
+  bottom: 84px;
   z-index: 40;
   display: flex;
   align-items: center;
