@@ -19,7 +19,6 @@ import { AuthModal } from "./components/AuthModal";
 import { Carousel } from "./components/Carousel";
 import { CartDrawer } from "./components/CartDrawer";
 import { ClientFormModal } from "./components/ClientFormModal";
-import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { MiniCart, type QqLastAdded } from "./components/MiniCart";
 import { ProductCard } from "./components/ProductCard";
@@ -479,8 +478,6 @@ export function QqHomePage() {
           }}
         />
       ) : null}
-
-      <Footer />
     </div>
   );
 }
