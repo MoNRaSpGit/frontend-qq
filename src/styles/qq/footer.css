@@ -1,51 +1,48 @@
-/* Pie de pagina (14/10/2026, pedido explicito, ajustado el mismo dia a
-   "termino medio, que se vea pero no tome tanto protagonismo"): una sola
-   linea de derechos de autor centrada, con el logo chiquito adentro, y
-   el contacto de WhatsApp como link discreto debajo -- sin chip, sin
-   fondo, texto muted, solo el icono en su verde para reconocerlo. */
+/* Pie de pagina (14/10/2026, tercera vuelta, pedido explicito): una sola
+   linea -- "Desarrollado por" + logo + WhatsApp a continuacion, todo
+   junto, alineado a la derecha. Sin copyright, sin chip con fondo. */
 .qq-footer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  justify-content: flex-end;
   margin-top: auto;
-  padding: 16px 20px;
+  padding: 14px 20px;
   border-top: 1px solid var(--color-border);
   background: var(--color-bg-elevated);
-  font-size: 12px;
-  color: var(--color-text-muted);
-  text-align: center;
 }
 
-.qq-footer-copyright {
-  display: flex;
+.qq-footer-credit {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin: 0;
+  gap: 7px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  transition: color 0.15s ease;
+}
+
+.qq-footer-credit:hover {
+  color: var(--color-text);
 }
 
 .qq-footer-logo {
   display: block;
-  height: 16px;
+  height: 20px;
   width: auto;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
-.qq-footer-contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-size: 11.5px;
-  transition: color 0.15s ease;
-}
-
-.qq-footer-contact:hover {
-  color: var(--color-text);
+.qq-footer-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--color-border);
 }
 
 .qq-footer-whatsapp-icon {
   color: #25d366;
   flex-shrink: 0;
+}
+
+.qq-footer-credit span:last-child {
+  font-weight: 700;
+  color: var(--color-text);
 }
