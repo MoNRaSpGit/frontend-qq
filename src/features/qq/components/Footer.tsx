@@ -20,7 +20,7 @@ export function Footer() {
   return (
     <footer className="qq-footer">
       <a href={LOGICLAB_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="qq-footer-credit">
-        <span>Desarrollado por</span>
+        <span>Desarrollado por Logic Lab.</span>
         <img src={`${import.meta.env.BASE_URL}logoLogicLab.png`} alt="Logic Lab" className="qq-footer-logo" />
         <span className="qq-footer-divider" aria-hidden="true" />
         <svg viewBox="0 0 32 32" width="15" height="15" fill="currentColor" aria-hidden="true" className="qq-footer-whatsapp-icon">
