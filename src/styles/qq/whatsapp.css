@@ -1,27 +1,35 @@
 /* Boton flotante de WhatsApp. Pedido explicito (14/10/2026): "el pie y el
-   logo de WhatsApp se chocan, uno arriba del otro" -- al ser position:
-   fixed, el boton queda pegado al borde de la PANTALLA sin importar el
-   scroll, mientras que el pie de pagina (Footer.tsx) aparece al final
-   del CONTENIDO; en paginas cortas, ambos caen en la misma franja de
-   abajo. Se soluciona subiendo el bottom lo suficiente como para quedar
-   siempre arriba del pie (que mide mas o menos 65px de alto). */
+   logo de WhatsApp se chocan" -- al ser position: fixed, el boton queda
+   pegado al borde de la PANTALLA sin importar el scroll, mientras que el
+   pie de pagina (Footer.tsx) aparece al final del CONTENIDO; en paginas
+   cortas, ambos caen en la misma franja de abajo.
+   Segunda vuelta (mismo dia, pedido explicito): "ponelo mucho mas arriba
+   para que no se mezcle con el nuestro [el pie], y hacelo mas chiquito
+   que sobresalta mucho" -- bottom bien alto (lejos del pie, no pegado) y
+   boton mas chico (menos padding, texto e icono mas chicos). El pie de
+   pagina NO se toca. */
 .qq-whatsapp-button {
   position: fixed;
   right: 20px;
-  bottom: 110px;
+  bottom: 190px;
   z-index: 40;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px 12px 14px;
+  gap: 6px;
+  padding: 8px 14px 8px 10px;
   border-radius: 999px;
   background: #25d366;
   color: #06210f;
-  font-weight: 800;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 12.5px;
   text-decoration: none;
-  box-shadow: 0 14px 28px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 10px 20px rgba(37, 211, 102, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qq-whatsapp-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .qq-whatsapp-button:hover {
