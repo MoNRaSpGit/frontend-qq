@@ -24,6 +24,7 @@ import { MiniCart, type QqLastAdded } from "./components/MiniCart";
 import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
+import { Footer } from "./components/Footer";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { type QqPriceVariant } from "./qq.pricing";
@@ -392,6 +393,8 @@ export function QqHomePage() {
           </main>
         </>
       )}
+
+      <Footer />
 
       <WhatsAppButton />
 

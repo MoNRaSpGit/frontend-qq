@@ -1,0 +1,70 @@
+/* Pie de pagina (14/10/2026, pedido explicito): derechos de autor a la
+   izquierda, "Desarrollado por LogicLab" + WhatsApp a la derecha. */
+.qq-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-top: auto;
+  padding: 18px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.qq-footer-copyright {
+  white-space: nowrap;
+}
+
+.qq-footer-credit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.qq-footer-credit:hover {
+  background: var(--color-card-hover);
+  border-color: var(--color-accent);
+}
+
+.qq-footer-credit-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.qq-footer-brand {
+  color: var(--color-accent);
+}
+
+.qq-footer-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--color-border);
+}
+
+.qq-footer-whatsapp-icon {
+  color: #25d366;
+  flex-shrink: 0;
+}
+
+.qq-footer-credit span:last-child {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+@media (max-width: 480px) {
+  .qq-footer {
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+  }
+}
