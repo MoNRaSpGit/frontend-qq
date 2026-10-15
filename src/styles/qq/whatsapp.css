@@ -1,8 +1,14 @@
-/* Boton flotante de WhatsApp */
+/* Boton flotante de WhatsApp. Pedido explicito (14/10/2026): "el pie y el
+   logo de WhatsApp se chocan, uno arriba del otro" -- al ser position:
+   fixed, el boton queda pegado al borde de la PANTALLA sin importar el
+   scroll, mientras que el pie de pagina (Footer.tsx) aparece al final
+   del CONTENIDO; en paginas cortas, ambos caen en la misma franja de
+   abajo. Se soluciona subiendo el bottom lo suficiente como para quedar
+   siempre arriba del pie (que mide mas o menos 65px de alto). */
 .qq-whatsapp-button {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 110px;
   z-index: 40;
   display: flex;
   align-items: center;
