@@ -25,7 +25,6 @@ import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { Footer } from "./components/Footer";
-import { WhatsAppButton } from "./components/WhatsAppButton";
 import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
 import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
@@ -395,8 +394,6 @@ export function QqHomePage() {
       )}
 
       <Footer />
-
-      <WhatsAppButton />
 
       {selectedProduct ? (
         <ProductDetailModal
