@@ -41,8 +41,11 @@
   color: var(--color-text-muted);
 }
 
-.qq-footer-brand {
-  color: var(--color-accent);
+.qq-footer-logo {
+  display: block;
+  height: 26px;
+  width: auto;
+  border-radius: 5px;
 }
 
 .qq-footer-divider {
