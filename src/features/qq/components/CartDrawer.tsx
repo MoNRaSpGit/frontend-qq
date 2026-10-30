@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
 import { reportWhatsAppCheckout } from "../qq.client";
+import { trackEvent } from "../qq.track";
 import { applyDiscount, isValidDiscountCode } from "../qq.discount";
 import { getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
@@ -51,6 +52,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
 
   function handleWhatsAppClick() {
     reportWhatsAppCheckout(items);
+    trackEvent("whatsapp_click", { label: "carrito" });
     window.setTimeout(onCompraEnviada, CLEAR_AFTER_CHECKOUT_MS);
   }
 

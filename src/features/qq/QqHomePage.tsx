@@ -28,6 +28,7 @@ import { Footer } from "./components/Footer";
 import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
 import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
+import { setTrackingEnabled, trackEvent } from "./qq.track";
 import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct } from "./qq.types";
 
 // Pantalla unica de arranque, pedida tal cual (14/09/2026): buscador en el
@@ -80,6 +81,27 @@ export function QqHomePage() {
   const [fadeStart, setFadeStart] = useState<number | null>(null);
 
   const isAdmin = session?.user.role === "administrador";
+
+  // Contador de visitas (30/10/2026): una visita por apertura de la pagina,
+  // y nada de lo que haga el administrador cuenta (ver qq.track.ts).
+  const visitTrackedRef = useRef(false);
+  useEffect(() => {
+    setTrackingEnabled(!isAdmin);
+    if (!isAdmin && !visitTrackedRef.current) {
+      visitTrackedRef.current = true;
+      trackEvent("visit");
+    }
+  }, [isAdmin]);
+
+  function handleOpenProduct(product: QqProduct) {
+    trackEvent("view_product", { productId: product.id, label: product.name });
+    setSelectedProduct(product);
+  }
+
+  function handleOpenCart() {
+    trackEvent("open_cart");
+    setShowCart(true);
+  }
 
   // La foto de fondo (fija a la ventana) empieza a oscurecerse justo
   // debajo del buscador -- pedido explicito (15/09/2026): "en la caja de
@@ -185,6 +207,7 @@ export function QqHomePage() {
   }
 
   function handleAgregarAlCarrito(product: QqProduct, variant: QqPriceVariant, quantity: number) {
+    trackEvent("add_to_cart", { productId: product.id, label: `${product.name} (${variant}) x${quantity}` });
     setCartItems((current) => addToCart(current, product, variant, quantity));
     setSelectedProduct(null);
     // Pedido explicito (19/09/2026): en vez del toast "se agrego al
@@ -284,7 +307,7 @@ export function QqHomePage() {
           onCodigo={() => setView("codigo")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
-          onAbrirCarrito={() => setShowCart(true)}
+          onAbrirCarrito={handleOpenCart}
         />
 
         {/* Pegado a la cabecera de verdad (adentro de .qq-hero, justo
@@ -409,7 +432,7 @@ export function QqHomePage() {
 
             <div className="qq-grid">
               {visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
+                <ProductCard key={product.id} product={product} onClick={handleOpenProduct} />
               ))}
             </div>
           </main>
@@ -429,7 +452,7 @@ export function QqHomePage() {
         />
       ) : null}
 
-      <MiniCart items={cartItems} lastAdded={lastAdded} hidden={showCart} onVerCarrito={() => setShowCart(true)} />
+      <MiniCart items={cartItems} lastAdded={lastAdded} hidden={showCart} onVerCarrito={handleOpenCart} />
 
       {showCart ? (
         <CartDrawer
