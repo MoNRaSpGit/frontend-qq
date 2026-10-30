@@ -25,7 +25,7 @@ import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { Footer } from "./components/Footer";
-import { getGenreForCategory, type QqGenreKey } from "./qq.genres";
+import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
 import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct } from "./qq.types";
@@ -367,6 +367,29 @@ export function QqHomePage() {
                 </svg>
               </button>
             </form>
+
+            {/* Pedido de un cliente (30/10/2026): las categorias tambien a
+                la vista, en una fila prolija abajo del buscador (el
+                desplegable "Categorías" del header queda igual). */}
+            <div className="qq-genre-row" role="group" aria-label="Filtrar por categoría">
+              <button
+                type="button"
+                className={selectedGenre === null ? "qq-chip is-active" : "qq-chip"}
+                onClick={() => setSelectedGenre(null)}
+              >
+                Todos
+              </button>
+              {QQ_GENRES.map((genre) => (
+                <button
+                  type="button"
+                  key={genre.key}
+                  className={selectedGenre === genre.key ? "qq-chip is-active" : "qq-chip"}
+                  onClick={() => setSelectedGenre(genre.key)}
+                >
+                  {genre.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <main className="qq-main">

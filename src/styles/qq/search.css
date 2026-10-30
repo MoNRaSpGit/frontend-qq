@@ -32,6 +32,29 @@
   color: #141414;
 }
 
+/* Fila de categorias abajo del buscador: siempre en UNA linea (en dos
+   quedaba una sola suelta abajo). Centrada en compu; en celular, si no
+   entra, se desliza de costado como las filas de Netflix. */
+.qq-genre-row {
+  display: flex;
+  justify-content: safe center;
+  gap: 8px;
+  width: 100%;
+  max-width: 820px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 2px 4px;
+}
+
+.qq-genre-row::-webkit-scrollbar {
+  display: none;
+}
+
+.qq-genre-row .qq-chip {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 /* Pill unica: lupa "de adorno" a la izquierda (con su rayita
    divisoria) + input + boton lupa celeste a la derecha, los tres
    adentro del mismo contenedor -- pedido explicito (15/09/2026): "la
