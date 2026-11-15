@@ -1,6 +1,6 @@
 import { getCartTotalsByCurrency, type QqCartItem } from "./qq.cart";
 import { applyDiscount } from "./qq.discount";
-import { getVariantPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
+import { getBillingSuffix, getBillingType, getVariantPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
 
 // Numero real del cliente (19/09/2026: se cambia a 098 856 076, pedido
 // explicito; antes 092945696) en formato internacional para wa.me -- misma
@@ -33,17 +33,18 @@ export function buildCartWhatsAppMessage(
   const lines = items.map((item) => {
     const subtitle = item.quantity > 1 ? ` x${item.quantity}` : "";
     const variantLabel = QQ_PRICE_VARIANT_LABELS[item.variant];
-    return `- ${item.product.name} (${variantLabel})${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)}/mes)`;
+    return `- ${item.product.name} (${variantLabel})${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)} ${getBillingSuffix(getBillingType(item.product))})`;
   });
 
   const totals = getCartTotalsByCurrency(items);
-  const totalLines = totals.map(({ currency, total }) => {
+  const totalLines = totals.map(({ currency, billing, total }) => {
     const moneda = currency === "USD" ? "U$S" : "$";
+    const suffix = getBillingSuffix(billing);
     if (!discount) {
-      return `Total: ${moneda}${total.toFixed(0)} /mes`;
+      return `Total: ${moneda}${total.toFixed(0)} ${suffix}`;
     }
     const withDiscount = applyDiscount(total, discount.percentage);
-    return `Subtotal: ${moneda}${total.toFixed(0)} /mes\nDescuento (código ${discount.code.toUpperCase()}, ${discount.percentage}%)\nTotal con descuento: ${moneda}${withDiscount.toFixed(0)} /mes`;
+    return `Subtotal: ${moneda}${total.toFixed(0)} ${suffix}\nDescuento (código ${discount.code.toUpperCase()}, ${discount.percentage}%)\nTotal con descuento: ${moneda}${withDiscount.toFixed(0)} ${suffix}`;
   });
 
   return ["Hola! Me gustaría comprar estos productos:", "", ...lines, "", ...totalLines].join("\n");

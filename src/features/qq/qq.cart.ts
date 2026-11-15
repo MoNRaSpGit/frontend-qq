@@ -1,4 +1,4 @@
-import { getVariantPrice, type QqPriceVariant } from "./qq.pricing";
+import { getBillingType, getVariantPrice, type QqBillingType, type QqPriceVariant } from "./qq.pricing";
 import type { QqProduct } from "./qq.types";
 
 // Carrito guardado en localStorage, por navegador -- sin backend todavia
@@ -79,13 +79,18 @@ export function clearCart(): QqCartItem[] {
 // Agrupa el total por moneda (no suma U$S con UYU como si fueran lo
 // mismo) -- hoy todo el catalogo esta en UYU, pero si el dia de mañana
 // hay productos en otra moneda, esto ya lo banca sin romper nada.
-export function getCartTotalsByCurrency(items: QqCartItem[]): Array<{ currency: string; total: number }> {
-  const totals = new Map<string, number>();
+// Ademas separa lo que se paga POR MES de lo que es PRECIO UNICO (14/11/2026):
+// no se suman juntos. Primero va lo mensual.
+export function getCartTotalsByCurrency(items: QqCartItem[]): Array<{ currency: string; billing: QqBillingType; total: number }> {
+  const totals = new Map<string, { currency: string; billing: QqBillingType; total: number }>();
   for (const item of items) {
-    const current = totals.get(item.product.currency) ?? 0;
-    totals.set(item.product.currency, current + getVariantPrice(item.product, item.variant) * item.quantity);
+    const billing = getBillingType(item.product);
+    const key = item.product.currency + "|" + billing;
+    const current = totals.get(key) ?? { currency: item.product.currency, billing, total: 0 };
+    current.total += getVariantPrice(item.product, item.variant) * item.quantity;
+    totals.set(key, current);
   }
-  return Array.from(totals.entries()).map(([currency, total]) => ({ currency, total }));
+  return Array.from(totals.values()).sort((a, b) => (a.billing === b.billing ? 0 : a.billing === "monthly" ? -1 : 1));
 }
 
 export function getCartCount(items: QqCartItem[]): number {

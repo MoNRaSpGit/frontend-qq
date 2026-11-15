@@ -3,6 +3,7 @@ import { createProduct, getProductImageSrc, updateProduct, uploadProductImage } 
 import { QQ_CATEGORY_OPTIONS } from "../qq.categories";
 import { resizeImageFile } from "../qq.imageResize";
 import type { QqProduct } from "../qq.types";
+import type { QqBillingType } from "../qq.pricing";
 
 type ProductFormModalProps = {
   token: string;
@@ -21,6 +22,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
   const [name, setName] = useState(product?.name ?? "");
   const [accountPrice, setAccountPrice] = useState(product?.accountPrice !== null && product?.accountPrice !== undefined ? String(product.accountPrice) : "");
   const [profilePrice, setProfilePrice] = useState(product?.profilePrice !== null && product?.profilePrice !== undefined ? String(product.profilePrice) : "");
+  const [billingType, setBillingType] = useState<QqBillingType>(product?.billingType === "one_time" ? "one_time" : "monthly");
   const [category, setCategory] = useState(product?.category ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(product ? getProductImageSrc(product) : null);
@@ -80,6 +82,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
       const common = {
         name: name.trim(),
         currency: "UYU",
+        billingType,
         category,
         description: description.trim() || undefined
       };
@@ -156,7 +159,15 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
               "hay tarjetas que si llevan los dos, otras que no". Se
               puede dejar uno vacio, pero no los dos. */}
           <label className="qq-field">
-            <span>Precio de cuenta mensual ($, opcional)</span>
+            <span>Cobro</span>
+            <select value={billingType} onChange={(event) => setBillingType(event.target.value as QqBillingType)}>
+              <option value="monthly">Por mes</option>
+              <option value="one_time">Precio único (se paga una vez)</option>
+            </select>
+          </label>
+
+          <label className="qq-field">
+            <span>Precio de cuenta ($, opcional)</span>
             <input
               type="number"
               step="1"
@@ -168,7 +179,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
           </label>
 
           <label className="qq-field">
-            <span>Precio de perfil mensual ($, opcional)</span>
+            <span>Precio de perfil ($, opcional)</span>
             <input
               type="number"
               step="1"

@@ -47,6 +47,8 @@ export type QqProduct = {
   accountPrice: number | null;
   profilePrice: number | null;
   currency: string;
+  // Por mes o precio unico (14/11/2026).
+  billingType?: "monthly" | "one_time";
   imageUrl: string | null;
   hasImage: boolean;
   category: string | null;

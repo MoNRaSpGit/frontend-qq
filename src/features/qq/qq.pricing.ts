@@ -39,6 +39,19 @@ export function getAvailableVariants(product: Pick<QqProduct, "accountPrice" | "
 // producto cambio despues de que algo quedara guardado en el carrito
 // (nunca deberia dar $0 mientras el producto tenga algun precio
 // cargado).
+// Tipo de cobro (14/11/2026): por mes o precio unico. Los productos
+// viejos (o un carrito guardado antes del cambio) sin dato valen "por mes".
+export type QqBillingType = "monthly" | "one_time";
+
+export function getBillingType(product: Pick<QqProduct, "billingType">): QqBillingType {
+  return product.billingType === "one_time" ? "one_time" : "monthly";
+}
+
+// Sufijo corto para mostrar junto al monto.
+export function getBillingSuffix(billing: QqBillingType): string {
+  return billing === "one_time" ? "pago único" : "/mes";
+}
+
 export function getVariantPrice(product: Pick<QqProduct, "accountPrice" | "profilePrice">, variant: QqPriceVariant): number {
   if (variant === "cuenta") {
     return product.accountPrice ?? product.profilePrice ?? 0;

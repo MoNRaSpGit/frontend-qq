@@ -46,6 +46,7 @@ export async function createProduct(
     accountPrice?: number;
     profilePrice?: number;
     currency?: string;
+    billingType?: "monthly" | "one_time";
     imageUrl?: string;
     category?: string;
     status?: QqProductStatus;
@@ -69,6 +70,7 @@ export async function updateProduct(
     accountPrice: number | null;
     profilePrice: number | null;
     currency: string;
+    billingType: "monthly" | "one_time";
     imageUrl: string;
     category: string;
     status: QqProductStatus;

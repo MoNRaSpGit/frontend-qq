@@ -3,7 +3,7 @@ import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.ca
 import { reportWhatsAppCheckout } from "../qq.client";
 import { trackEvent } from "../qq.track";
 import { applyDiscount, isValidDiscountCode } from "../qq.discount";
-import { getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
+import { getBillingSuffix, getBillingType, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 import type { QqDiscountConfig } from "../qq.types";
 
@@ -77,7 +77,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                     <span className="qq-cart-row-name">
                       {item.product.name} <span className="qq-cart-row-variant">({QQ_PRICE_VARIANT_LABELS[item.variant]})</span>
                     </span>
-                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)} /mes c/u</span>
+                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)} {getBillingSuffix(getBillingType(item.product))} c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
                     <button
@@ -134,15 +134,15 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
 
             <div className="qq-cart-totals">
               {totals.map((total) => (
-                <div key={total.currency} className="qq-cart-total-line">
-                  <span>Total mensual</span>
+                <div key={total.currency + total.billing} className="qq-cart-total-line">
+                  <span>{total.billing === "one_time" ? "Total pago único" : "Total mensual"}</span>
                   {codigoAplicado && discountConfig ? (
                     <span className="qq-cart-total-with-discount">
                       <span className="qq-cart-total-original">${total.total.toFixed(0)}</span>
-                      <strong>${applyDiscount(total.total, discountConfig.percentage).toFixed(0)} /mes</strong>
+                      <strong>${applyDiscount(total.total, discountConfig.percentage).toFixed(0)} {getBillingSuffix(total.billing)}</strong>
                     </span>
                   ) : (
-                    <strong>${total.total.toFixed(0)} /mes</strong>
+                    <strong>${total.total.toFixed(0)} {getBillingSuffix(total.billing)}</strong>
                   )}
                 </div>
               ))}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
 import { getProductImageSrc } from "../qq.client";
-import { getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
+import { getBillingSuffix, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
@@ -201,12 +201,12 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
           <span>Total acumulado</span>
           <strong>
             <AnimatedAmount value={mainTotal} />
-            <small> /mes</small>
+            <small> {getBillingSuffix(totals[0]?.billing ?? "monthly")}</small>
           </strong>
         </div>
         {totals.length > 1 ? (
           <p className="qq-minicart-extra-totals">
-            {totals.slice(1).map((total) => `${total.currency} $${total.total.toFixed(0)}`).join(" · ")}
+            {totals.slice(1).map((total) => `${total.currency} $${total.total.toFixed(0)} ${getBillingSuffix(total.billing)}`).join(" · ")}
           </p>
         ) : null}
 

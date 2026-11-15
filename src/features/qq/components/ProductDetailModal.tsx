@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { getProductImageSrc } from "../qq.client";
-import { getAvailableVariants, getPriceLines, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
+import { getAvailableVariants, getBillingSuffix, getBillingType, getPriceLines, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
@@ -80,7 +80,7 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
                     onClick={() => setSelectedVariant(variant)}
                   >
                     <span className="qq-detail-price-label">{QQ_PRICE_VARIANT_LABELS[variant]}</span>
-                    <span className="qq-detail-variant-amount">${getVariantPrice(product, variant).toFixed(0)} /mes</span>
+                    <span className="qq-detail-variant-amount">${getVariantPrice(product, variant).toFixed(0)} {getBillingSuffix(getBillingType(product))}</span>
                   </button>
                 ))}
               </div>
@@ -94,7 +94,7 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
                 <div className="qq-detail-price" key={line.label}>
                   <span className="qq-detail-price-label">{line.label}</span>
                   <span>
-                    ${line.amount.toFixed(0)} <span className="qq-detail-price-suffix">/mes</span>
+                    ${line.amount.toFixed(0)} <span className="qq-detail-price-suffix">{getBillingSuffix(getBillingType(product))}</span>
                   </span>
                 </div>
               ))}
