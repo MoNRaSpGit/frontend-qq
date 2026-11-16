@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 300" width="1920" height="300" font-family="Arial, sans-serif">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b0f3a"/><stop offset="1" stop-color="#5b2bd9"/></linearGradient></defs>
+<rect width="1920" height="300" fill="url(#g)"/>
+<circle cx="1536" cy="150" r="180" fill="#fff" fill-opacity=".08"/><circle cx="1804.8" cy="30" r="105" fill="#ff3d71" fill-opacity=".25"/>
+<rect x="200" y="42" width="150" height="34" rx="17" fill="#ff3d71"/>
+<text x="275" y="65" font-size="18" font-weight="700" letter-spacing="3" text-anchor="middle" fill="#111">NUEVO</text>
+<text x="200" y="155" font-size="84" font-weight="800" fill="#fff">Streaming sin límites</text>
+<text x="203" y="200" font-size="26" fill="#fff" fill-opacity=".85">Netflix, Disney+, Max y más desde $350 al mes</text>
+<rect x="200" y="222" width="230" height="46" rx="23" fill="#fff"/>
+<text x="315" y="252" font-size="20" font-weight="700" fill="#111" text-anchor="middle">Ver catálogo</text>
+<rect x="1630" y="248" width="250" height="40" rx="10" fill="#000" fill-opacity=".55"/>
+<text x="1755" y="276" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">1920 × 300 px</text>
+</svg>

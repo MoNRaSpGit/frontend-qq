@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getCarouselImageSrc } from "../qq.client";
-import type { QqCarouselImage } from "../qq.types";
+// src = imagen de celular (la de siempre). srcDesktop (opcional, 16/11/2026) =
+// version para PC con el contenido en la zona central, que no se corta en
+// ningun ancho de ventana. Sin srcDesktop, la PC usa src como antes.
+export type CarouselSlide = { key: string | number; src: string; srcDesktop?: string };
 
 type CarouselProps = {
-  images: QqCarouselImage[];
+  images: CarouselSlide[];
 };
 
 const AUTOPLAY_MS = 5000;
@@ -39,8 +41,12 @@ export function Carousel({ images }: CarouselProps) {
       <div className="qq-carousel-viewport">
         <div className="qq-carousel-track" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
           {images.map((image) => (
-            <div className="qq-carousel-slide" key={image.id}>
-              <img src={getCarouselImageSrc(image)} alt="" loading="lazy" />
+            <div className="qq-carousel-slide" key={image.key}>
+              <picture>
+                {/* Mismo corte que el @media del celular en carousel.css (640px). */}
+                {image.srcDesktop ? <source media="(min-width: 641px)" srcSet={image.srcDesktop} /> : null}
+                <img src={image.src} alt="" loading="lazy" />
+              </picture>
             </div>
           ))}
         </div>
@@ -65,7 +71,7 @@ export function Carousel({ images }: CarouselProps) {
         <div className="qq-carousel-dots" role="tablist" aria-label="Imágenes destacadas">
           {images.map((image, index) => (
             <button
-              key={image.id}
+              key={image.key}
               type="button"
               className={index === activeIndex ? "qq-carousel-dot is-active" : "qq-carousel-dot"}
               onClick={() => goTo(index)}

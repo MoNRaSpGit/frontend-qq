@@ -4,6 +4,8 @@ import {
   deleteClient,
   deleteProduct,
   getDiscountConfig,
+  getCarouselDesktopImageSrc,
+  getCarouselImageSrc,
   listCarouselImages,
   listClients,
   listCategories,
@@ -17,7 +19,7 @@ import { AdminClientsPage } from "./components/AdminClientsPage";
 import { AdminDiscountPage } from "./components/AdminDiscountPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
-import { Carousel } from "./components/Carousel";
+import { Carousel, type CarouselSlide } from "./components/Carousel";
 import { CartDrawer } from "./components/CartDrawer";
 import { ClientFormModal } from "./components/ClientFormModal";
 import { Header } from "./components/Header";
@@ -40,6 +42,14 @@ import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct } from "./q
 // tarjeta cuadrada + detalle al click + carrito + WhatsApp flotante
 // (15/09/2026) -- el resto de las pantallas (editar producto, Blog,
 // Contacto reales) se suman despues.
+// Mientras el admin no cargue imagenes propias se muestran 3 anuncios de
+// ejemplo (igual que en Ropa); apenas suba la primera, la reemplaza.
+const DEFAULT_CAROUSEL_SLIDES: CarouselSlide[] = [1, 2, 3].map((n) => ({
+  key: `demo-${n}`,
+  src: `${import.meta.env.BASE_URL}carrusel/anuncio-${n}.svg`,
+  srcDesktop: `${import.meta.env.BASE_URL}carrusel/anuncio-${n}-pc.svg`
+}));
+
 export function QqHomePage() {
   const [session, setSession] = useState<QqSession | null>(() => loadSession());
   // "catalogo" = lo que ve cualquier visitante; "productos" = pantalla
@@ -156,6 +166,15 @@ export function QqHomePage() {
     }, 250);
     return () => window.clearTimeout(timeoutId);
   }, [query]);
+
+  const carouselSlides: CarouselSlide[] =
+    carouselImages.length > 0 && !carouselError
+      ? carouselImages.map((image) => ({
+          key: image.id,
+          src: getCarouselImageSrc(image),
+          srcDesktop: getCarouselDesktopImageSrc(image) ?? undefined
+        }))
+      : DEFAULT_CAROUSEL_SLIDES;
 
   async function refreshCarousel() {
     setIsCarouselLoading(true);
@@ -329,9 +348,9 @@ export function QqHomePage() {
             lucir la foto de fondo antes del titulo/buscador; poniendo
             el carrusel afuera de este div quedaba pegado al titulo en
             vez de al header, por ese espacio de por medio. */}
-        {view === "catalogo" && !isCarouselLoading && !carouselError && carouselImages.length > 0 ? (
+        {view === "catalogo" && !isCarouselLoading ? (
           <div className="qq-carousel-wrap">
-            <Carousel images={carouselImages} />
+            <Carousel images={carouselSlides} />
           </div>
         ) : null}
       </div>
@@ -353,6 +372,7 @@ export function QqHomePage() {
           isLoading={isCarouselLoading}
           error={carouselError}
           onAgregada={(image) => setCarouselImages((current) => [...current, image])}
+          onActualizada={(image) => setCarouselImages((current) => current.map((item) => (item.id === image.id ? image : item)))}
           onEliminada={(imageId) => setCarouselImages((current) => current.filter((item) => item.id !== imageId))}
         />
       ) : view === "clientes" && isAdmin && session ? (

@@ -151,6 +151,22 @@ export function getCarouselImageSrc(image: Pick<QqCarouselImage, "id" | "version
   return buildUrl(`/qq/carousel/${image.id}/image?v=${image.version}`);
 }
 
+// Version PC (16/11/2026); null si el slide no tiene.
+export function getCarouselDesktopImageSrc(image: Pick<QqCarouselImage, "id" | "desktopVersion">): string | null {
+  if (!image.desktopVersion) return null;
+  return buildUrl(`/qq/carousel/${image.id}/image?variant=desktop&v=${image.desktopVersion}`);
+}
+
+export async function setCarouselDesktopImage(token: string, imageId: number, dataUri: string) {
+  const response = await fetch(buildUrl(`/qq/carousel/${imageId}/desktop`), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ dataUri })
+  });
+  const data = await readJson<{ item: QqCarouselImage }>(response);
+  return data.item;
+}
+
 export async function listCarouselImages() {
   const response = await fetch(buildUrl("/qq/carousel"));
   const data = await readJson<{ items: QqCarouselImage[] }>(response);

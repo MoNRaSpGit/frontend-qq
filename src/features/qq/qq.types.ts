@@ -15,6 +15,8 @@ export type QqCarouselImage = {
   // Hash corto del binario -- va en la URL (?v=) para saltear la cache de un
   // anio del navegador cuando se reemplaza el contenido de la imagen.
   version: string;
+  // Version PC (16/11/2026): null = no tiene, la PC muestra la de celular.
+  desktopVersion: string | null;
 };
 
 // Cuenta corriente (15/09/2026): SOLO el admin ve esto (email/telefono
