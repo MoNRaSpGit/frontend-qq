@@ -23,25 +23,25 @@ type AdminCarouselPageProps = {
 // Prompts para que la clienta genere los banners con su IA (16/11/2026,
 // pedido explicito): boton "Copiar prompt" por cada medida.
 const AI_PROMPTS = {
-  mobile: `Necesito un banner publicitario para el carrusel de la tienda online de qq, en la versión para CELULAR.
+  mobile: `Necesito un banner publicitario para el carrusel de la página de Qq Digital (venta de suscripciones y cuentas digitales: streaming, música, juegos, herramientas), en la versión para CELULAR.
 
 Medidas exactas: ${CAROUSEL_SIZES.mobile.width} x ${CAROUSEL_SIZES.mobile.height} píxeles (horizontal, proporción 3:1).
 
 Cómo tiene que ser:
 - La imagen se ve ENTERA en el celular, pero chica (unos 390 x 130 px en pantalla). Por eso: poco texto y bien grande.
 - Máximo un título corto (2 a 5 palabras) y, si hace falta, una frase breve abajo. Nada de letra chica.
-- Dejá un margen libre de al menos 60 px en los 4 bordes: ningún texto ni prenda pegado al borde.
-- Texto a la izquierda y la prenda/foto o dibujo a la derecha queda muy bien.
+- Dejá un margen libre de al menos 60 px en los 4 bordes: ningún texto ni imagen pegada al borde.
+- Texto a la izquierda y la imagen o dibujo a la derecha queda muy bien.
 - Estilo de la página: oscuro y moderno (fondo negro o muy oscuro), con colores vivos como detalle. Buen contraste entre el texto y el fondo para que se lea.
 - Sin marcos, sin bordes blancos y sin simular una pantalla de celular: la imagen ocupa todo el lienzo.
 
 Tema del banner: [ESCRIBÍ ACÁ DE QUÉ ES: ej. "Netflix desde $350 al mes", "nuevo: Spotify Premium", "1 mes gratis"]`,
-  desktop: `Necesito un banner publicitario para el carrusel de la tienda online de qq, en la versión para PC (computadora).
+  desktop: `Necesito un banner publicitario para el carrusel de la página de Qq Digital (venta de suscripciones y cuentas digitales: streaming, música, juegos, herramientas), en la versión para PC (computadora).
 
 Medidas exactas: ${CAROUSEL_SIZES.desktop.width} x ${CAROUSEL_SIZES.desktop.height} píxeles (una franja MUY horizontal y finita, proporción 6,4:1).
 
 Cómo tiene que ser:
-- La franja ocupa todo el ancho de la pantalla. En ventanas más angostas se recortan los COSTADOS, así que todo lo importante (texto, prenda, logo) tiene que ir en la zona CENTRAL: entre los píxeles 500 y 1420 de ancho.
+- La franja ocupa todo el ancho de la pantalla. En ventanas más angostas se recortan los COSTADOS, así que todo lo importante (texto, logo, imagen principal) tiene que ir en la zona CENTRAL: entre los píxeles 500 y 1420 de ancho.
 - Los costados (los primeros y últimos 500 px) solo con fondo, color o decoración que se pueda cortar sin problema.
 - Dejá al menos 30 px libres arriba y abajo: ningún texto pegado al borde.
 - Un título corto y bien legible, y como mucho una frase breve. Es una franja finita: poco texto.
