@@ -190,3 +190,20 @@
     height: max(var(--qq-carousel-mobile-min-height), calc(100vw * 271 / 1920));
   }
 }
+
+/* (16/11/2026) Medida + "Copiar prompt para IA" del carrusel. */
+.qq-carousel-size {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-elevated);
+  font-size: 14px;
+}
+
+.qq-carousel-size .qq-button {
+  align-self: flex-start;
+}

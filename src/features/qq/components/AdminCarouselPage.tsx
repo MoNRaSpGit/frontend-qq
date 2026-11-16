@@ -13,6 +13,33 @@ type AdminCarouselPageProps = {
   onEliminada: (imageId: number) => void;
 };
 
+// Prompt para que el administrador genere el banner con su IA (16/11/2026,
+// mismo recurso que en Ropa): medida real del carrusel de QQ, que es una sola
+// franja 1920 x 271. En PC se recortan los costados (alto minimo 316 px con
+// object-fit: cover) y en celular se ve ENTERA pero chica (~390 x 55 px).
+const AI_PROMPT = `Necesito un banner publicitario para el carrusel de la página de Qq Digital (venta de suscripciones y cuentas digitales: streaming, música, juegos, herramientas).
+
+Medidas exactas: 1920 x 271 píxeles (una franja MUY horizontal y finita, proporción 7:1).
+
+Cómo tiene que ser:
+- La franja ocupa todo el ancho de la pantalla. En la computadora, según el tamaño de la ventana, se recortan los COSTADOS: todo lo importante (título, logo, imagen principal) tiene que ir en la zona CENTRAL, entre los píxeles 400 y 1520 de ancho.
+- Los costados (los primeros y últimos 400 px) solo con fondo, degradé o decoración que se pueda cortar sin problema.
+- En el celular la imagen se ve ENTERA pero muy chica (unos 390 x 55 px). Por eso: un título cortísimo (2 a 4 palabras) en letras GRANDES y gruesas. Nada de letra chica.
+- Dejá al menos 25 px libres arriba y abajo: ningún texto pegado al borde.
+- Estilo de la página: oscuro y moderno (fondo negro o muy oscuro), con colores vivos como detalle. Buen contraste entre el texto y el fondo para que se lea.
+- Sin marcos, sin bordes blancos y sin simular una pantalla: la imagen ocupa todo el lienzo.
+
+Tema del banner: [ESCRIBÍ ACÁ DE QUÉ ES: ej. "Netflix desde $350 al mes", "nuevo: Spotify Premium", "1 mes gratis"]`;
+
+async function copyPrompt() {
+  try {
+    await navigator.clipboard.writeText(AI_PROMPT);
+    toast.success("Prompt copiado. Pegalo en tu IA y completá el tema.");
+  } catch {
+    toast.error("No se pudo copiar. Probá de nuevo.");
+  }
+}
+
 // Pestaña propia del admin para cargar las fotos de fondo del carrusel --
 // pedido explicito (15/09/2026): "que el administrador entre a carrusel,
 // ponga una imagen y esa imagen sea como la de fondo y vaya corriendo".
@@ -69,6 +96,14 @@ export function AdminCarouselPage({ token, images, isLoading, error, onAgregada,
           disabled={subiendo}
         >
           {subiendo ? "Subiendo..." : "+ Agregar imagen"}
+        </button>
+      </div>
+
+      <div className="qq-carousel-size">
+        <strong>Medida: 1920 × 271 px</strong>
+        <span>En PC se cortan los costados (lo importante al centro). En celular se ve entera pero chica: poco texto y grande.</span>
+        <button type="button" className="qq-button qq-button--ghost" onClick={() => void copyPrompt()}>
+          Copiar prompt para IA
         </button>
       </div>
 
