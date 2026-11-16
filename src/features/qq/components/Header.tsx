@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { QQ_GENRES, type QqGenreKey } from "../qq.genres";
+import { useQqGenres, type QqGenreKey } from "../qq.genres";
 import type { QqSession } from "../qq.session";
 import { trackEvent } from "../qq.track";
 import { buildWhatsAppHref } from "../qq.whatsapp";
@@ -11,12 +11,13 @@ type HeaderProps = {
   cartCount: number;
   selectedGenre: QqGenreKey | null;
   onSelectGenre: (genre: QqGenreKey | null) => void;
-  activeView: "catalogo" | "productos" | "carrusel" | "clientes" | "codigo";
+  activeView: "catalogo" | "productos" | "carrusel" | "clientes" | "codigo" | "categorias";
   onInicio: () => void;
   onProductos: () => void;
   onCarrusel: () => void;
   onClientes: () => void;
   onCodigo: () => void;
+  onCategorias: () => void;
   onIngresar: () => void;
   onSalir: () => void;
   onAbrirCarrito: () => void;
@@ -36,10 +37,12 @@ export function Header({
   onCarrusel,
   onClientes,
   onCodigo,
+  onCategorias,
   onIngresar,
   onSalir,
   onAbrirCarrito
 }: HeaderProps) {
+  const genres = useQqGenres();
   const [showFeatures, setShowFeatures] = useState(false);
   const isAdmin = session?.user.role === "administrador";
 
@@ -110,6 +113,16 @@ export function Header({
             Código
           </button>
         ) : null}
+
+        {isAdmin ? (
+          <button
+            type="button"
+            className={activeView === "categorias" ? "qq-nav-link is-active" : "qq-nav-link"}
+            onClick={onCategorias}
+          >
+            Categorías
+          </button>
+        ) : null}
 
         <div className="qq-features-dropdown">
           <button
@@ -132,7 +145,7 @@ export function Header({
               >
                 Todos
               </button>
-              {QQ_GENRES.map((genre) => (
+              {genres.map((genre) => (
                 <button
                   type="button"
                   key={genre.key}

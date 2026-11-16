@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../../shared/config/api";
+import type { QqGenre } from "./qq.genres";
 import { getVariantPrice } from "./qq.pricing";
 import type { QqCarouselImage, QqClient, QqDiscountConfig, QqProduct, QqProductStatus, QqUser } from "./qq.types";
 
@@ -257,4 +258,43 @@ export async function loginUser(payload: { email: string; password: string }) {
 
 export async function logoutUser(token: string) {
   await fetch(buildUrl("/qq/auth/logout"), { method: "POST", headers: authHeaders(token) }).catch(() => {});
+}
+
+// Categorias editables por el administrador (16/11/2026).
+export async function listCategories(): Promise<QqGenre[]> {
+  const response = await fetch(buildUrl("/qq/categories"));
+  const data = await readJson<{ items: QqGenre[] }>(response);
+  return data.items;
+}
+
+export async function createCategory(token: string, label: string) {
+  const response = await fetch(buildUrl("/qq/categories"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ label })
+  });
+  return readJson<{ id: number; key: string; label: string }>(response);
+}
+
+export async function renameCategory(token: string, id: number, label: string) {
+  const response = await fetch(buildUrl(`/qq/categories/${id}`), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ label })
+  });
+  await readJson<{ ok: boolean }>(response);
+}
+
+export async function moveCategory(token: string, id: number, direction: "up" | "down") {
+  const response = await fetch(buildUrl(`/qq/categories/${id}/move`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ direction })
+  });
+  await readJson<{ ok: boolean }>(response);
+}
+
+export async function deleteCategory(token: string, id: number) {
+  const response = await fetch(buildUrl(`/qq/categories/${id}`), { method: "DELETE", headers: authHeaders(token) });
+  await readJson<{ ok: boolean }>(response);
 }

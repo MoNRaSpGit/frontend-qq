@@ -182,3 +182,89 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Pestaña Categorias del admin (16/11/2026). */
+.qq-cat-add {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.qq-cat-add--sub {
+  margin: 6px 0 0 18px;
+}
+
+.qq-cat-input {
+  flex: 1 1 200px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.qq-cat-list {
+  display: grid;
+  gap: 14px;
+}
+
+.qq-cat-group {
+  padding: 10px 12px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.qq-cat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 0;
+}
+
+.qq-cat-row--sub {
+  margin-left: 18px;
+  padding-left: 10px;
+  border-left: 2px solid var(--color-border);
+}
+
+.qq-cat-label {
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.qq-cat-row--sub .qq-cat-label {
+  font-weight: 500;
+}
+
+.qq-cat-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.qq-cat-confirm {
+  font-size: 13px;
+}
+
+.qq-cat-icon {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.qq-cat-icon:disabled {
+  opacity: 0.35;
+  cursor: default;
+}

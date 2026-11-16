@@ -6,6 +6,7 @@ import {
   getDiscountConfig,
   listCarouselImages,
   listClients,
+  listCategories,
   listProducts,
   logoutUser,
   reorderProduct
@@ -25,7 +26,8 @@ import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
 import { Footer } from "./components/Footer";
-import { getGenreForCategory, QQ_GENRES, type QqGenreKey } from "./qq.genres";
+import { getGenreForCategory, setQqGenres, useQqGenres, type QqGenreKey } from "./qq.genres";
+import { AdminCategoriesPage } from "./components/AdminCategoriesPage";
 import { type QqPriceVariant } from "./qq.pricing";
 import { clearSession, loadSession, saveSession, type QqSession } from "./qq.session";
 import { setTrackingEnabled, trackEvent } from "./qq.track";
@@ -44,8 +46,17 @@ export function QqHomePage() {
   // propia del admin para cargar/editar/borrar -- pedido explicito
   // (15/09/2026): "que no ingrese directo en la pantalla principal, que
   // tenga su propia pestaña".
-  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes" | "codigo">("catalogo");
+  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes" | "codigo" | "categorias">("catalogo");
   const [query, setQuery] = useState("");
+  const qqGenres = useQqGenres();
+  // Categorias editables por el administrador (16/11/2026).
+  useEffect(() => {
+    void listCategories()
+      .then((items) => {
+        if (items.length > 0) setQqGenres(items);
+      })
+      .catch(() => undefined);
+  }, []);
   const [selectedGenre, setSelectedGenre] = useState<QqGenreKey | null>(null);
   const [products, setProducts] = useState<QqProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -305,6 +316,7 @@ export function QqHomePage() {
           onCarrusel={() => setView("carrusel")}
           onClientes={() => setView("clientes")}
           onCodigo={() => setView("codigo")}
+          onCategorias={() => setView("categorias")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
           onAbrirCarrito={handleOpenCart}
@@ -352,6 +364,8 @@ export function QqHomePage() {
           onEditar={handleEditarCliente}
           onEliminar={(client) => void handleEliminarCliente(client)}
         />
+      ) : view === "categorias" && isAdmin && session ? (
+        <AdminCategoriesPage token={session.token} />
       ) : view === "codigo" && isAdmin && session ? (
         <AdminDiscountPage
           token={session.token}
@@ -402,7 +416,7 @@ export function QqHomePage() {
               >
                 Todos
               </button>
-              {QQ_GENRES.map((genre) => (
+              {qqGenres.map((genre) => (
                 <button
                   type="button"
                   key={genre.key}

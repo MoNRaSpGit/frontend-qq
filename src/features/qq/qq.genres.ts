@@ -1,11 +1,13 @@
-// Categorias cerradas -- pedido explicito (15/09/2026): "son solo esas
-// categorias" (Musica, Cine, Video juegos, Pagina web). Antes el genero
-// agrupaba varias categorias especificas (netflix, spotify, etc.); ahora
-// la categoria QUE ELIGE EL ADMIN (ver qq.categories.ts) ya es
-// directamente el genero -- no hace falta ningun mapeo intermedio.
-export type QqGenreKey = "musica" | "cine" | "videojuegos" | "pagina-web" | "anime" | "herramientas" | "tv";
+import { useSyncExternalStore } from "react";
 
-export const QQ_GENRES: Array<{ key: QqGenreKey; label: string }> = [
+// Categorias del catalogo (16/11/2026): desde hoy la lista REAL la edita el
+// administrador y se carga del servidor (setQqGenres). La key es lo que se
+// guarda en cada producto y NUNCA cambia: solo se cambia el nombre visible.
+export type QqGenreKey = string;
+export type QqGenre = { id?: number; key: QqGenreKey; label: string };
+
+// Respaldo mientras el servidor no responde (lista original del 15/09/2026).
+export const DEFAULT_QQ_GENRES: QqGenre[] = [
   { key: "musica", label: "Música" },
   { key: "cine", label: "Cine" },
   { key: "videojuegos", label: "Video juegos" },
@@ -15,10 +17,30 @@ export const QQ_GENRES: Array<{ key: QqGenreKey; label: string }> = [
   { key: "tv", label: "TV" }
 ];
 
-const VALID_GENRES = new Set<string>(QQ_GENRES.map((genre) => genre.key));
+let currentGenres: QqGenre[] = DEFAULT_QQ_GENRES;
+const listeners = new Set<() => void>();
+
+export function getQqGenres(): QqGenre[] {
+  return currentGenres;
+}
+
+export function setQqGenres(genres: QqGenre[]) {
+  currentGenres = genres;
+  listeners.forEach((listener) => listener());
+}
+
+export function useQqGenres(): QqGenre[] {
+  return useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    getQqGenres
+  );
+}
 
 export function getGenreForCategory(category: string | null): QqGenreKey | null {
   if (!category) return null;
   const normalized = category.trim().toLowerCase();
-  return VALID_GENRES.has(normalized) ? (normalized as QqGenreKey) : null;
+  return currentGenres.some((genre) => genre.key === normalized) ? normalized : null;
 }

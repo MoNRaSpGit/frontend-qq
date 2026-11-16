@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
 import { createProduct, getProductImageSrc, updateProduct, uploadProductImage } from "../qq.client";
-import { QQ_CATEGORY_OPTIONS } from "../qq.categories";
+import { useQqGenres } from "../qq.genres";
 import { resizeImageFile } from "../qq.imageResize";
 import type { QqProduct } from "../qq.types";
 import type { QqBillingType } from "../qq.pricing";
@@ -23,6 +23,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
   const [accountPrice, setAccountPrice] = useState(product?.accountPrice !== null && product?.accountPrice !== undefined ? String(product.accountPrice) : "");
   const [profilePrice, setProfilePrice] = useState(product?.profilePrice !== null && product?.profilePrice !== undefined ? String(product.profilePrice) : "");
   const [billingType, setBillingType] = useState<QqBillingType>(product?.billingType === "one_time" ? "one_time" : "monthly");
+  const genres = useQqGenres();
   const [category, setCategory] = useState(product?.category ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(product ? getProductImageSrc(product) : null);
@@ -147,8 +148,8 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
             <span>Categoría</span>
             <select value={category} onChange={(event) => setCategory(event.target.value)}>
               <option value="">Elegir...</option>
-              {QQ_CATEGORY_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
+              {genres.map((option) => (
+                <option key={option.key} value={option.key}>
                   {option.label}
                 </option>
               ))}
