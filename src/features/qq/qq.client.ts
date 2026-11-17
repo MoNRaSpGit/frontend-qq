@@ -147,12 +147,15 @@ export function reportWhatsAppCheckout(items: Array<{ product: QqProduct; varian
 // Carrusel de fondos (15/09/2026): el admin carga fotos desde su propia
 // pestaña y el sitio va rotando entre ellas + la foto original fija de
 // public/ como fondo de toda la pagina (ver QqHomePage.tsx).
-export function getCarouselImageSrc(image: Pick<QqCarouselImage, "id" | "version">): string {
+export function getCarouselImageSrc(image: Pick<QqCarouselImage, "id" | "version" | "imageUrl">): string {
+  // Imagenes nuevas: link directo de Cloudinary. Viejas: las sirve el backend.
+  if (image.imageUrl) return image.imageUrl;
   return buildUrl(`/qq/carousel/${image.id}/image?v=${image.version}`);
 }
 
 // Version PC (16/11/2026); null si el slide no tiene.
-export function getCarouselDesktopImageSrc(image: Pick<QqCarouselImage, "id" | "desktopVersion">): string | null {
+export function getCarouselDesktopImageSrc(image: Pick<QqCarouselImage, "id" | "desktopVersion" | "desktopImageUrl">): string | null {
+  if (image.desktopImageUrl) return image.desktopImageUrl;
   if (!image.desktopVersion) return null;
   return buildUrl(`/qq/carousel/${image.id}/image?variant=desktop&v=${image.desktopVersion}`);
 }

@@ -17,6 +17,9 @@ export type QqCarouselImage = {
   version: string;
   // Version PC (16/11/2026): null = no tiene, la PC muestra la de celular.
   desktopVersion: string | null;
+  // Link directo de Cloudinary (17/11/2026). Si existe, se usa tal cual.
+  imageUrl: string | null;
+  desktopImageUrl: string | null;
 };
 
 // Cuenta corriente (15/09/2026): SOLO el admin ve esto (email/telefono
