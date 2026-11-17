@@ -1,87 +1,58 @@
-// Redimensiona/comprime una imagen ANTES de mandarla al servidor, del lado del
-// cliente (canvas), para que nunca llegue una foto "recontrapesada 4K".
+// Achica/comprime una imagen ANTES de mandarla al servidor, del lado del cliente
+// (canvas), para que nunca llegue una foto "recontrapesada 4K".
 //
-// Problema que resuelve: el admin sube fotos de cualquier forma (3000x4000,
-// verticales, cuadradas) y en la web de escritorio quedaban corridas o
-// cortadas. Solucion: cada imagen se compone en un lienzo de medida EXACTA
-// (la misma de la caja donde se muestra), asi lo que se guarda es
-// exactamente lo que se ve, sin sorpresas.
-const CANVAS_SIZE = 640;
-const JPEG_QUALITY = 0.85;
+// 17/11/2026 (pedido explicito): la imagen se guarda TAL COMO ES, con sus
+// proporciones. Antes se componia en un lienzo de medida fija con un fondo
+// borroso (la misma foto agrandada y desenfocada) cuando la forma no coincidia:
+// eso producia los costados difuminados en tarjetas y carrusel. Ahora solo se
+// achica si es mas grande de lo necesario y se comprime; nada se recorta, se
+// rellena ni se desenfoca. La forma de mostrarla la resuelve el CSS.
+const PRODUCT_MAX_SIDE = 1280;
+const PRODUCT_JPEG_QUALITY = 0.85;
 
-// Relleno de las bandas cuando la foto no tiene la forma del lienzo: en vez de
-// un color solido (que en una tienda rosa se ve como una franja negra), se
-// usa la MISMA foto agrandada y borrosa de fondo, con la foto entera adelante.
-// Se desenfoca achicando y agrandando (anda en todos los navegadores, a
-// diferencia de ctx.filter que Safari no tiene).
-function drawBlurredFill(context: CanvasRenderingContext2D, image: HTMLImageElement, width: number, height: number) {
-  const tiny = document.createElement("canvas");
-  tiny.width = 32;
-  tiny.height = Math.max(1, Math.round((32 * height) / width));
-  const tinyContext = tiny.getContext("2d");
-  if (!tinyContext) return;
-  const coverScale = Math.max(tiny.width / image.width, tiny.height / image.height);
-  const w = image.width * coverScale;
-  const h = image.height * coverScale;
-  tinyContext.drawImage(image, (tiny.width - w) / 2, (tiny.height - h) / 2, w, h);
-  context.imageSmoothingEnabled = true;
-  context.imageSmoothingQuality = "high";
-  context.drawImage(tiny, 0, 0, width, height);
-}
-
-// Encaja la foto en un lienzo EXACTO de width x height. Si la forma es casi la
-// misma (hasta ~12% de diferencia) se recorta apenas para llenar; si es muy
-// distinta (vertical, cuadrada, panoramica) se muestra ENTERA sobre el fondo
-// borroso, asi nunca se le corta la cara ni el producto a nadie.
-function composeOnCanvas(image: HTMLImageElement, width: number, height: number, quality: number): string | null {
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext("2d");
-  if (!context) return null;
-
-  const targetRatio = width / height;
-  const imageRatio = image.width / image.height;
-  const closeEnough = Math.abs(imageRatio / targetRatio - 1) <= 0.12;
-
-  if (closeEnough) {
-    const scale = Math.max(width / image.width, height / image.height);
-    const drawWidth = image.width * scale;
-    const drawHeight = image.height * scale;
-    context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
-  } else {
-    drawBlurredFill(context, image, width, height);
-    const scale = Math.min(width / image.width, height / image.height);
-    const drawWidth = image.width * scale;
-    const drawHeight = image.height * scale;
-    context.drawImage(image, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
-  }
-  return canvas.toDataURL("image/jpeg", quality);
-}
-
-// Tarjeta del catalogo: siempre cuadrada.
-export async function resizeImageFile(file: File): Promise<string> {
-  const originalDataUri = await readFileAsDataUri(file);
-  const image = await loadImage(originalDataUri);
-  // Sin soporte de canvas (muy raro) se manda la original tal cual.
-  return composeOnCanvas(image, CANVAS_SIZE, CANVAS_SIZE, JPEG_QUALITY) ?? originalDataUri;
-}
-
-// Carrusel: medida unica y fija (la que se le dice al admin y la misma de la
-// caja del carrusel), suba lo que suba.
-// (16/11/2026) Dos medidas: celular 1200x400 = la forma del recuadro en el
-// celular (se ve entera); PC 1920x300 = banda fina, lo importante al centro.
+// Medidas RECOMENDADAS para el carrusel (las que se le dicen al admin en los
+// prompts para IA): celular 1200x400, PC 1920x300. Si sube otra forma, se
+// guarda como es (solo se achica el ancho si pasa de la medida).
 export const CAROUSEL_SIZES = {
   mobile: { width: 1200, height: 400 },
   desktop: { width: 1920, height: 300 }
 } as const;
 const CAROUSEL_JPEG_QUALITY = 0.82;
 
-export async function resizeCarouselImageFile(file: File, variant: keyof typeof CAROUSEL_SIZES): Promise<string> {
+// Achica (nunca agranda) manteniendo las proporciones. Sin soporte de canvas
+// (muy raro) se manda la original tal cual.
+async function downscale(file: File, maxWidth: number, maxHeight: number, quality: number): Promise<string> {
   const originalDataUri = await readFileAsDataUri(file);
   const image = await loadImage(originalDataUri);
-  const { width, height } = CAROUSEL_SIZES[variant];
-  return composeOnCanvas(image, width, height, CAROUSEL_JPEG_QUALITY) ?? originalDataUri;
+
+  const scale = Math.min(1, maxWidth / image.width, maxHeight / image.height);
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) return originalDataUri;
+
+  // Fondo negro por si la imagen tiene transparencia (el JPEG no la admite).
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, width, height);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
+// Tarjeta del catalogo: la imagen tal cual, solo achicada si es enorme.
+export function resizeImageFile(file: File): Promise<string> {
+  return downscale(file, PRODUCT_MAX_SIDE, PRODUCT_MAX_SIDE, PRODUCT_JPEG_QUALITY);
+}
+
+// Carrusel (celular o PC): tal cual, solo achicada si pasa del ancho recomendado.
+export function resizeCarouselImageFile(file: File, variant: keyof typeof CAROUSEL_SIZES): Promise<string> {
+  const { width } = CAROUSEL_SIZES[variant];
+  return downscale(file, width, Number.POSITIVE_INFINITY, CAROUSEL_JPEG_QUALITY);
 }
 
 function readFileAsDataUri(file: File): Promise<string> {
