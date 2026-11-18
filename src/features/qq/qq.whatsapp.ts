@@ -1,6 +1,6 @@
 import { getCartTotalsByCurrency, type QqCartItem } from "./qq.cart";
 import { applyDiscount } from "./qq.discount";
-import { getBillingSuffix, getBillingType, getVariantPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
+import { getBillingSuffix, getBillingType, getVariantPrice, hasAnyPrice, QQ_PRICE_VARIANT_LABELS } from "./qq.pricing";
 
 // Numero real del cliente (19/09/2026: se cambia a 098 856 076, pedido
 // explicito; antes 092945696) en formato internacional para wa.me -- misma
@@ -32,8 +32,10 @@ export function buildCartWhatsAppMessage(
 ): string {
   const lines = items.map((item) => {
     const subtitle = item.quantity > 1 ? ` x${item.quantity}` : "";
-    const variantLabel = QQ_PRICE_VARIANT_LABELS[item.variant];
-    return `- ${item.product.name} (${variantLabel})${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)} ${getBillingSuffix(getBillingType(item.product))})`;
+    const priced = hasAnyPrice(item.product);
+    const variantLabel = priced ? ` (${QQ_PRICE_VARIANT_LABELS[item.variant]})` : "";
+    const suffix = priced ? ` ${getBillingSuffix(getBillingType(item.product))}` : "";
+    return `- ${item.product.name}${variantLabel}${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)}${suffix})`;
   });
 
   const totals = getCartTotalsByCurrency(items);

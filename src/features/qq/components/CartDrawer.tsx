@@ -3,7 +3,7 @@ import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.ca
 import { reportWhatsAppCheckout } from "../qq.client";
 import { trackEvent } from "../qq.track";
 import { applyDiscount, isValidDiscountCode } from "../qq.discount";
-import { getBillingSuffix, getBillingType, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
+import { getBillingSuffix, getBillingType, getVariantPrice, hasAnyPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { buildCartWhatsAppMessage, buildWhatsAppHref } from "../qq.whatsapp";
 import type { QqDiscountConfig } from "../qq.types";
 
@@ -75,9 +75,10 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                 <div className="qq-cart-row" key={`${item.product.id}-${item.variant}`}>
                   <div className="qq-cart-row-info">
                     <span className="qq-cart-row-name">
-                      {item.product.name} <span className="qq-cart-row-variant">({QQ_PRICE_VARIANT_LABELS[item.variant]})</span>
+                      {item.product.name}{" "}
+                      {hasAnyPrice(item.product) ? <span className="qq-cart-row-variant">({QQ_PRICE_VARIANT_LABELS[item.variant]})</span> : null}
                     </span>
-                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)} {getBillingSuffix(getBillingType(item.product))} c/u</span>
+                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)}{hasAnyPrice(item.product) ? ` ${getBillingSuffix(getBillingType(item.product))}` : ""} c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
                     <button

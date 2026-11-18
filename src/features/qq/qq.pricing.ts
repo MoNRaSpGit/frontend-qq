@@ -58,3 +58,9 @@ export function getVariantPrice(product: Pick<QqProduct, "accountPrice" | "profi
   }
   return product.profilePrice ?? product.accountPrice ?? 0;
 }
+
+// true si el producto tiene al menos un precio cargado. Sin precio (17/11/2026) se
+// compra igual, con valor $0, y no se muestra "Perfil"/"Cuenta" ni "/mes".
+export function hasAnyPrice(product: Pick<QqProduct, "accountPrice" | "profilePrice">): boolean {
+  return product.accountPrice !== null || product.profilePrice !== null;
+}

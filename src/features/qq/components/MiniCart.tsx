@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getCartCount, getCartTotalsByCurrency, type QqCartItem } from "../qq.cart";
 import { getProductImageSrc } from "../qq.client";
-import { getBillingSuffix, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
+import { getBillingSuffix, getVariantPrice, hasAnyPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
 
@@ -161,7 +161,7 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
           <div className="qq-minicart-added-info">
             <strong>{lastAdded.product.name}</strong>
             <div className="qq-minicart-added-meta">
-              <VariantPill variant={lastAdded.variant} />
+              {hasAnyPrice(lastAdded.product) ? <VariantPill variant={lastAdded.variant} /> : null}
               <span>×{addedLine.quantity} en tu carrito</span>
             </div>
           </div>
@@ -180,7 +180,7 @@ export function MiniCart({ items, lastAdded, hidden, onVerCarrito }: MiniCartPro
                   <span className="qq-minicart-row-info">
                     <span className="qq-minicart-row-name">{item.product.name}</span>
                     <span className="qq-minicart-row-meta">
-                      <VariantPill variant={item.variant} />
+                      {hasAnyPrice(item.product) ? <VariantPill variant={item.variant} /> : null}
                       <span>×{item.quantity}</span>
                     </span>
                   </span>
