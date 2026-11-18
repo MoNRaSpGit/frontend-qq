@@ -62,5 +62,7 @@ export type QqProduct = {
   // 1, la 1 pasa al puesto de la que cambie". El publico ve las
   // tarjetas ordenadas por esto.
   position: number;
+  // Fotos extra (otros angulos) que se pasan en el detalle (17/11/2026).
+  gallery?: Array<{ id: number; url: string }>;
   createdAt: string;
 };

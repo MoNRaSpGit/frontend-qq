@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from "react";
-import { createProduct, getProductImageSrc, updateProduct, uploadProductImage } from "../qq.client";
+import { toast } from "react-toastify";
+import { addProductGalleryImage, createProduct, deleteProductGalleryImage, getProductImageSrc, updateProduct, uploadProductImage } from "../qq.client";
 import { useQqGenres } from "../qq.genres";
 import { resizeImageFile } from "../qq.imageResize";
 import type { QqProduct } from "../qq.types";
@@ -12,12 +13,14 @@ type ProductFormModalProps = {
   product?: QqProduct;
   onCancelar: () => void;
   onGuardado: (product: QqProduct) => void;
+  // Las fotos extra se suben/borran al instante: avisa para refrescar el catalogo.
+  onProductoActualizado?: (product: QqProduct) => void;
 };
 
 // Precio SIEMPRE en pesos (UYU) y SIEMPRE mensual -- pedido explicito
 // (15/09/2026): "el precio va a ser en pesos... eso es mensual". No hay
 // selector de moneda, se manda fijo.
-export function ProductFormModal({ token, product, onCancelar, onGuardado }: ProductFormModalProps) {
+export function ProductFormModal({ token, product, onCancelar, onGuardado, onProductoActualizado }: ProductFormModalProps) {
   const isEditing = Boolean(product);
   const [name, setName] = useState(product?.name ?? "");
   const [accountPrice, setAccountPrice] = useState(product?.accountPrice !== null && product?.accountPrice !== undefined ? String(product.accountPrice) : "");
@@ -31,6 +34,43 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Fotos extra (otros angulos) -- solo al editar, porque necesitan el id del producto.
+  const MAX_GALLERY = 5;
+  const [gallery, setGallery] = useState(product?.gallery ?? []);
+  const [galleryBusy, setGalleryBusy] = useState(false);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleGalleryFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !product) return;
+    setGalleryBusy(true);
+    try {
+      const resized = await resizeImageFile(file);
+      const updated = await addProductGalleryImage(token, product.id, resized);
+      setGallery(updated.gallery ?? []);
+      onProductoActualizado?.(updated);
+      toast.success("Foto agregada.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo agregar la foto.");
+    } finally {
+      setGalleryBusy(false);
+    }
+  }
+
+  async function handleGalleryDelete(imageId: number) {
+    if (!product) return;
+    setGalleryBusy(true);
+    try {
+      const updated = await deleteProductGalleryImage(token, product.id, imageId);
+      setGallery(updated.gallery ?? []);
+      onProductoActualizado?.(updated);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo borrar la foto.");
+    } finally {
+      setGalleryBusy(false);
+    }
+  }
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -138,6 +178,34 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado }: Pro
             </div>
             <small>Se ajusta sola al tamaño de la tarjeta -- no hace falta subir algo pesado.</small>
           </label>
+
+          {isEditing ? (
+            <div className="qq-field">
+              <span>
+                Más fotos (otros ángulos) · {gallery.length}/{MAX_GALLERY}
+              </span>
+              <div className="qq-gallery-editor">
+                {gallery.map((photo) => (
+                  <div className="qq-gallery-thumb" key={photo.id}>
+                    <img src={photo.url} alt="Foto extra" />
+                    <button type="button" className="qq-gallery-thumb-remove" onClick={() => void handleGalleryDelete(photo.id)} disabled={galleryBusy} aria-label="Quitar foto">
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {gallery.length < MAX_GALLERY ? (
+                  <>
+                    <input type="file" accept="image/*" ref={galleryInputRef} onChange={(event) => void handleGalleryFile(event)} hidden />
+                    <button type="button" className="qq-gallery-add" onClick={() => galleryInputRef.current?.click()} disabled={galleryBusy}>
+                      {galleryBusy ? "..." : "+"}
+                    </button>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <p className="qq-hint">Las fotos extra se suman al editar el producto.</p>
+          )}
 
           <label className="qq-field">
             <span>Nombre</span>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getProductImageSrc } from "../qq.client";
 import { getAvailableVariants, getBillingSuffix, getBillingType, getPriceLines, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
@@ -33,6 +33,22 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const theme = getProductTheme(product);
   const imageSrc = getProductImageSrc(product);
+  // Foto principal + fotos extra (otros angulos), pasables con flechas, puntitos,
+  // teclado o deslizando el dedo (17/11/2026).
+  const slides = [imageSrc, ...(product.gallery ?? []).map((photo) => photo.url)].filter((src): src is string => Boolean(src));
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const goToSlide = (index: number) => setSlideIndex((index + slides.length) % slides.length);
+
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "ArrowLeft") setSlideIndex((current) => (current - 1 + slides.length) % slides.length);
+      if (event.key === "ArrowRight") setSlideIndex((current) => (current + 1) % slides.length);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [slides.length]);
   const needsVariantChoice = availableVariants.length > 1;
 
   return (
@@ -42,14 +58,46 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
           ×
         </button>
 
-        <div className="qq-detail-media" style={imageSrc ? undefined : { background: theme.gradient }}>
-          {imageSrc ? (
-            <img src={imageSrc} alt={product.name} />
+        <div
+          className="qq-detail-media"
+          style={slides.length > 0 ? undefined : { background: theme.gradient }}
+          onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
+          onTouchEnd={(event) => {
+            if (touchStartX === null || slides.length < 2) return;
+            const delta = event.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(delta) > 40) goToSlide(slideIndex + (delta < 0 ? 1 : -1));
+            setTouchStartX(null);
+          }}
+        >
+          {slides.length > 0 ? (
+            <img key={slides[slideIndex]} src={slides[slideIndex]} alt={`${product.name} (foto ${slideIndex + 1} de ${slides.length})`} />
           ) : (
             <span className="qq-detail-media-wordmark" style={{ color: theme.textColor }}>
               {product.name}
             </span>
           )}
+
+          {slides.length > 1 ? (
+            <>
+              <button type="button" className="qq-detail-arrow qq-detail-arrow--prev" onClick={() => goToSlide(slideIndex - 1)} aria-label="Foto anterior">
+                ‹
+              </button>
+              <button type="button" className="qq-detail-arrow qq-detail-arrow--next" onClick={() => goToSlide(slideIndex + 1)} aria-label="Foto siguiente">
+                ›
+              </button>
+              <div className="qq-detail-dots">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={index === slideIndex ? "qq-detail-dot is-active" : "qq-detail-dot"}
+                    onClick={() => setSlideIndex(index)}
+                    aria-label={`Ir a la foto ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
 
         <div className="qq-detail-body">
