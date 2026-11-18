@@ -24,7 +24,6 @@ import { CartDrawer } from "./components/CartDrawer";
 import { ClientFormModal } from "./components/ClientFormModal";
 import { Header } from "./components/Header";
 import { MiniCart, type QqLastAdded } from "./components/MiniCart";
-import { NoticePopup } from "./components/NoticePopup";
 import { ProductCard } from "./components/ProductCard";
 import { ProductDetailModal } from "./components/ProductDetailModal";
 import { ProductFormModal } from "./components/ProductFormModal";
@@ -487,7 +486,6 @@ export function QqHomePage() {
         />
       ) : null}
 
-      <NoticePopup />
 
       <MiniCart items={cartItems} lastAdded={lastAdded} hidden={showCart} onVerCarrito={handleOpenCart} />
 
