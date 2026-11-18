@@ -78,7 +78,7 @@ export function CartDrawer({ items, onCerrar, onCambiarCantidad, onQuitar, onVac
                       {item.product.name}{" "}
                       {hasAnyPrice(item.product) ? <span className="qq-cart-row-variant">({QQ_PRICE_VARIANT_LABELS[item.variant]})</span> : null}
                     </span>
-                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)}{hasAnyPrice(item.product) ? ` ${getBillingSuffix(getBillingType(item.product))}` : ""} c/u</span>
+                    <span className="qq-cart-row-price">${getVariantPrice(item.product, item.variant).toFixed(0)} {getBillingSuffix(getBillingType(item.product))} c/u</span>
                   </div>
                   <div className="qq-qty-stepper">
                     <button

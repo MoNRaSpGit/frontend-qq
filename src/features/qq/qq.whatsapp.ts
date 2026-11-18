@@ -34,7 +34,7 @@ export function buildCartWhatsAppMessage(
     const subtitle = item.quantity > 1 ? ` x${item.quantity}` : "";
     const priced = hasAnyPrice(item.product);
     const variantLabel = priced ? ` (${QQ_PRICE_VARIANT_LABELS[item.variant]})` : "";
-    const suffix = priced ? ` ${getBillingSuffix(getBillingType(item.product))}` : "";
+    const suffix = ` ${getBillingSuffix(getBillingType(item.product))}`;
     return `- ${item.product.name}${variantLabel}${subtitle} ($${getVariantPrice(item.product, item.variant).toFixed(0)}${suffix})`;
   });
 

@@ -105,7 +105,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado, onPro
       setError("Ingresá un precio de perfil válido.");
       return;
     }
-    // Los precios son opcionales (17/11/2026): sin ninguno, la pagina muestra "Consultar".
+    // Los precios son opcionales (17/11/2026): sin ninguno, la pagina muestra $0.
     if (!category) {
       setError("Elegí una categoría.");
       return;
@@ -251,7 +251,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado, onPro
               value={profilePrice}
               onChange={(event) => setProfilePrice(event.target.value)}
             />
-            <small>Si no ponés ningún precio, se muestra "Consultar".</small>
+            <small>Si no ponés ningún precio, se muestra $0.</small>
           </label>
 
           <label className="qq-field">

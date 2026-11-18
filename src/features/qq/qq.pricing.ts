@@ -21,6 +21,8 @@ export function getPriceLines(product: Pick<QqProduct, "accountPrice" | "profile
   if (product.accountPrice !== null) {
     lines.push({ label: "Precio cuenta", amount: product.accountPrice });
   }
+  // Sin precio cargado: se muestra como cualquier producto, con $0.
+  if (lines.length === 0) lines.push({ label: "Precio", amount: 0 });
   return lines;
 }
 

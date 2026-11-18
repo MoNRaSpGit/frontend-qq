@@ -51,9 +51,7 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
     return () => window.removeEventListener("keydown", onKey);
   }, [slides.length]);
   const needsVariantChoice = availableVariants.length > 1;
-  // Sin ningun precio cargado (17/11/2026): el precio dice "Consultar" y se agrega
-  // al carrito igual, con valor $0.
-  const hasPrice = availableVariants.length > 0;
+  // Sin ningun precio cargado (17/11/2026): se ve y se compra igual, con valor $0.
 
   return (
     <div className="qq-modal-overlay" onClick={onCerrar}>
@@ -109,14 +107,7 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
           {product.category ? <span className="qq-card-category">{product.category}</span> : null}
           {product.description ? <p className="qq-detail-description">{product.description}</p> : null}
 
-          {!hasPrice ? (
-            <div className="qq-detail-prices">
-              <div className="qq-detail-price">
-                <span className="qq-detail-price-label">Precio</span>
-                <span>Consultar</span>
-              </div>
-            </div>
-          ) : needsVariantChoice ? (
+          {needsVariantChoice ? (
             // Los dos precios cargados -- hay que elegir uno para poder
             // agregar al carrito (pedido explicito, 16/09/2026). Pedido
             // explicito (17/09/2026): "el boton me sale opaco... algunos
