@@ -52,3 +52,12 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Boton hecho con un link (ej. "Consultar precio por WhatsApp"): sin subrayado y centrado (17/11/2026). */
+a.qq-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}

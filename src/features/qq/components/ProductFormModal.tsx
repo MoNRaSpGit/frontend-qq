@@ -105,13 +105,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado, onPro
       setError("Ingresá un precio de perfil válido.");
       return;
     }
-    // "Si pone los dos, salen los dos... hay tarjetas que si llevan y
-    // otras que no" -- pero al menos UNO de los dos tiene que estar
-    // (pedido explicito, 16/09/2026).
-    if (accountPriceNum === null && profilePriceNum === null) {
-      setError("Ingresá al menos un precio (de cuenta o de perfil).");
-      return;
-    }
+    // Los precios son opcionales (17/11/2026): sin ninguno, la pagina muestra "Consultar".
     if (!category) {
       setError("Elegí una categoría.");
       return;
@@ -257,6 +251,7 @@ export function ProductFormModal({ token, product, onCancelar, onGuardado, onPro
               value={profilePrice}
               onChange={(event) => setProfilePrice(event.target.value)}
             />
+            <small>Si no ponés ningún precio, se muestra "Consultar".</small>
           </label>
 
           <label className="qq-field">

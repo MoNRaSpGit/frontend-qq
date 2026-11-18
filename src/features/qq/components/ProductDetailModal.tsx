@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getProductImageSrc } from "../qq.client";
+import { trackEvent } from "../qq.track";
+import { buildWhatsAppHref } from "../qq.whatsapp";
 import { getAvailableVariants, getBillingSuffix, getBillingType, getPriceLines, getVariantPrice, QQ_PRICE_VARIANT_LABELS, type QqPriceVariant } from "../qq.pricing";
 import { getProductTheme } from "../qq.theme";
 import type { QqProduct } from "../qq.types";
@@ -50,6 +52,9 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
     return () => window.removeEventListener("keydown", onKey);
   }, [slides.length]);
   const needsVariantChoice = availableVariants.length > 1;
+  // Sin ningun precio cargado (17/11/2026): se muestra "Consultar" y en vez de
+  // agregar al carrito se consulta el precio por WhatsApp.
+  const hasPrice = availableVariants.length > 0;
 
   return (
     <div className="qq-modal-overlay" onClick={onCerrar}>
@@ -105,7 +110,14 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
           {product.category ? <span className="qq-card-category">{product.category}</span> : null}
           {product.description ? <p className="qq-detail-description">{product.description}</p> : null}
 
-          {needsVariantChoice ? (
+          {!hasPrice ? (
+            <div className="qq-detail-prices">
+              <div className="qq-detail-price">
+                <span className="qq-detail-price-label">Precio</span>
+                <span>Consultar</span>
+              </div>
+            </div>
+          ) : needsVariantChoice ? (
             // Los dos precios cargados -- hay que elegir uno para poder
             // agregar al carrito (pedido explicito, 16/09/2026). Pedido
             // explicito (17/09/2026): "el boton me sale opaco... algunos
@@ -163,6 +175,19 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
             </div>
           ) : (
             <>
+              {!hasPrice ? (
+                <div className="qq-detail-actions">
+                  <a
+                    className="qq-button qq-button--whatsapp qq-detail-add"
+                    href={buildWhatsAppHref(`Hola! Quiero consultar el precio de ${product.name}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("whatsapp_click", { productId: product.id, label: `consultar precio: ${product.name}` })}
+                  >
+                    Consultar precio por WhatsApp
+                  </a>
+                </div>
+              ) : (
               <div className="qq-detail-actions">
                 <div className="qq-qty-stepper">
                   <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} aria-label="Restar">
@@ -187,6 +212,7 @@ export function ProductDetailModal({ product, isAdmin, onCerrar, onAgregarAlCarr
                   Agregar al carrito
                 </button>
               </div>
+              )}
 
               {isAdmin ? (
                 <div className="qq-detail-admin-actions">

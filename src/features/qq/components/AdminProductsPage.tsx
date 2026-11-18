@@ -94,9 +94,11 @@ export function AdminProductsPage({ products, isLoading, error, onNuevo, onEdita
                 <span className="qq-admin-row-name">{product.name}</span>
                 <span className="qq-admin-row-meta">
                   {product.category || "Sin categoría"} ·{" "}
-                  {getPriceLines(product)
-                    .map((line) => `${line.label} $${line.amount.toFixed(0)} ${getBillingSuffix(getBillingType(product))}`)
-                    .join(" · ")}
+                  {getPriceLines(product).length > 0
+                    ? getPriceLines(product)
+                        .map((line) => `${line.label} ${line.amount.toFixed(0)} ${getBillingSuffix(getBillingType(product))}`)
+                        .join(" · ")
+                    : "Consultar"}
                 </span>
               </div>
 
