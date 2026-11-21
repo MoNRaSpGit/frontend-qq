@@ -283,7 +283,7 @@
 .qq-visits-hero span { color: var(--color-text-muted); font-weight: 600; }
 .qq-visits-hero b { font-size: 3.2rem; line-height: 1.05; color: var(--color-accent-dark); }
 .qq-visits-hero small { color: var(--color-text-muted); }
-.qq-visits-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.qq-visits-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .qq-visits-cards > div { display: grid; gap: 4px; padding: 14px; border-radius: 14px; background: var(--color-card); border: 1px solid var(--color-border); min-width: 0; }
 .qq-visits-cards span { font-size: 0.85rem; color: var(--color-text-muted); }
 .qq-visits-cards b { font-size: 1.6rem; color: var(--color-text); }

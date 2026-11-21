@@ -65,10 +65,6 @@ export function AdminVisitsPage({ token }: { token: string }) {
             <span>🛒 Agregados al carrito</span>
             <b>{data?.carts ?? 0}</b>
           </div>
-          <div>
-            <span>💬 Te escribieron por WhatsApp</span>
-            <b>{data?.whatsapp ?? 0}</b>
-          </div>
         </div>
 
         {days > 1 && (data?.byDay.length ?? 0) > 0 ? (
