@@ -17,6 +17,7 @@ import { addToCart, clearCart, getCartCount, loadCart, removeFromCart, updateCar
 import { AdminCarouselPage } from "./components/AdminCarouselPage";
 import { AdminClientsPage } from "./components/AdminClientsPage";
 import { AdminDiscountPage } from "./components/AdminDiscountPage";
+import { AdminVisitsPage } from "./components/AdminVisitsPage";
 import { AdminProductsPage } from "./components/AdminProductsPage";
 import { AuthModal } from "./components/AuthModal";
 import { Carousel, type CarouselSlide } from "./components/Carousel";
@@ -56,7 +57,7 @@ export function QqHomePage() {
   // propia del admin para cargar/editar/borrar -- pedido explicito
   // (15/09/2026): "que no ingrese directo en la pantalla principal, que
   // tenga su propia pestaña".
-  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes" | "codigo" | "categorias">("catalogo");
+  const [view, setView] = useState<"catalogo" | "productos" | "carrusel" | "clientes" | "codigo" | "categorias" | "visitas">("catalogo");
   const [query, setQuery] = useState("");
   const qqGenres = useQqGenres();
   // Categorias editables por el administrador (16/11/2026).
@@ -335,6 +336,7 @@ export function QqHomePage() {
           onCarrusel={() => setView("carrusel")}
           onClientes={() => setView("clientes")}
           onCodigo={() => setView("codigo")}
+          onVisitas={() => setView("visitas")}
           onCategorias={() => setView("categorias")}
           onIngresar={() => setShowAuthModal(true)}
           onSalir={() => void handleSalir()}
@@ -386,6 +388,8 @@ export function QqHomePage() {
         />
       ) : view === "categorias" && isAdmin && session ? (
         <AdminCategoriesPage token={session.token} />
+      ) : view === "visitas" && isAdmin && session ? (
+        <AdminVisitsPage token={session.token} />
       ) : view === "codigo" && isAdmin && session ? (
         <AdminDiscountPage
           token={session.token}

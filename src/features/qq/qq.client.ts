@@ -337,3 +337,19 @@ export async function deleteProductGalleryImage(token: string, productId: number
   const data = await readJson<{ item: QqProduct }>(response);
   return data.item;
 }
+
+// Visitas de la tienda para el admin (21/11/2026): solo totales, ya calculados en el servidor.
+export type VisitsSummary = {
+  days: number;
+  people: number;
+  views: number;
+  carts: number;
+  whatsapp: number;
+  byDay: { day: string; people: number }[];
+  topProducts: { label: string; views: number }[];
+};
+
+export async function getVisits(token: string, days: number) {
+  const response = await fetch(buildUrl("/qq/admin/visits?days=" + days), { headers: authHeaders(token) });
+  return readJson<VisitsSummary>(response);
+}
